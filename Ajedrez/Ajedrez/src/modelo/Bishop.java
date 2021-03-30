@@ -13,15 +13,11 @@ public class Bishop extends Pieza{
 		} else {
 			tipo = Tipo.BLACK_BISHOP;
 		}
+		colocate(posicion);
 	}
 	
-	public Bishop(Color color) {
-		if(color == Color.WHITE) {
-			tipo = Tipo.WHITE_BISHOP;
-		} else {
-			tipo = Tipo.BLACK_BISHOP;
-		}
-	}
+	
+
 
 	@Override
 	public Lista<Coordenada> getNextMoves() {

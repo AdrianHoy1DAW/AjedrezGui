@@ -2,27 +2,27 @@ package modelo;
 
 public enum Tipo {
 
-	WHITE_KING(Color.WHITE,"\u2654"),
-	WHITE_QUEEN(Color.WHITE,"\u2655"),
-	WHITE_BISHOP(Color.WHITE,"\u2657"),
-	WHITE_KNIGHT(Color.WHITE,"\u2658"),
-	WHITE_ROOK(Color.WHITE,"\u2656"),
-	WHITE_PAWN(Color.WHITE,"\u2659"),
-	BLACK_KING(Color.BLACK,"\u265A"),
-	BLACK_QUEEN(Color.BLACK,"\u265B"),
-	BLACK_BISHOP(Color.BLACK,"\u265D"),
-	BLACK_KNIGHT(Color.BLACK,"\u265E"),
-	BLACK_ROOK(Color.BLACK,"\u265C"),
-	BLACK_PAWN(Color.BLACK,"\u265F");
+	WHITE_KING(Color.WHITE,"b_rey.gif"),
+	WHITE_QUEEN(Color.WHITE,"b_reina.gif"),
+	WHITE_BISHOP(Color.WHITE,"b_alfil.gif"),
+	WHITE_KNIGHT(Color.WHITE,"b_caballo.gif"),
+	WHITE_ROOK(Color.WHITE,"b_torre.gif"),
+	WHITE_PAWN(Color.WHITE,"b_peon.gif"),
+	BLACK_KING(Color.BLACK,"n_rey.gif"),
+	BLACK_QUEEN(Color.BLACK,"n_reina.gif"),
+	BLACK_BISHOP(Color.BLACK,"n_alfil.gif"),
+	BLACK_KNIGHT(Color.BLACK,"n_caballo.gif"),
+	BLACK_ROOK(Color.BLACK,"n_torre.gif"),
+	BLACK_PAWN(Color.BLACK,"n_peon.gif");
 	
 	
 	
 	private Color color;
-	private String forma;
+	private String filename;
 	
 	Tipo(Color color, String forma) {
 		this.color = color;
-		this.forma = forma;
+		this.filename = forma;
 	}
 
 	public Color getColor() {
@@ -30,7 +30,7 @@ public enum Tipo {
 	}
 
 	public String getForma() {
-		return forma;
+		return filename;
 	}
 
 	

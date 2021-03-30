@@ -1,10 +1,23 @@
 package modelo;
 
+import java.awt.GridLayout;
+import java.awt.Rectangle;
+
+import java.util.HashMap;
+
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
 import entrada.Coordenada;
 
-public class Tablero {
 
-	private Celda[][] tablero;
+
+
+public class Tablero extends JPanel{
+
+	private HashMap<Coordenada,Celda> tablero;
 	private Lista<Pieza> blancas;
 	private Lista<Pieza> negras;
 	private Lista<Pieza> blancasEliminadas;
@@ -13,21 +26,29 @@ public class Tablero {
 	private Pieza whiteKing;
 	
 	public Tablero(){
-		tablero = new Celda[8][8];
+		super();
+		setBounds(new Rectangle(0, 0, 500, 500));
+		setLayout(new GridLayout(10, 10, 0, 0));
+		
+		tablero = new HashMap<Coordenada,Celda>();
 		blancas = new Lista<Pieza>();
 		negras = new Lista<Pieza>();
 		this.blancasEliminadas = new Lista<Pieza>();
 		this.negrasEliminadas = new Lista<Pieza>();
+		
 		inicializar();
 	}
 	
 	private void inicializar() {
 		
-		for(int fila = 0; fila < tablero.length; fila ++) {
-			for(int col = 0; col < tablero[0].length; col++) {
-				tablero[fila][col] = new Celda();
-			}
+		for (int fila = 0; fila < 8; fila++) {
+			for (int col = 0; col < 8; col++)
+				tablero.put(new Coordenada((char)('A'+col),1+fila),new Celda());
 		}
+		
+		System.out.println(tablero);
+		
+		
 		
 		//Colocar las piezas
 				negras.addHead(new Rook(Color.BLACK,new Coordenada('A',8),this));
@@ -39,7 +60,7 @@ public class Tablero {
 				negras.addHead(new Bishop(Color.BLACK,new Coordenada('F',8),this));
 				negras.addHead(new Knight(Color.BLACK,new Coordenada('G',8),this));
 				negras.addHead(new Rook(Color.BLACK,new Coordenada('H',8),this));
-				for(int i = 0; i < tablero.length; i ++) {
+				for(int i = 0; i < 8; i ++) {
 					negras.addHead(new Pawn(Color.BLACK,new Coordenada((char) ('A' + i),7),this));
 			}
 			
@@ -53,13 +74,42 @@ public class Tablero {
 				blancas.addHead(new Bishop(Color.WHITE,new Coordenada('F',1),this));
 				blancas.addHead(new Knight(Color.WHITE,new Coordenada('G',1),this));
 				blancas.addHead(new Rook(Color.WHITE,new Coordenada('H',1),this));
-				for(int i = 0; i < tablero.length; i ++) {
+				for(int i = 0; i < 8; i ++) {
 					blancas.addHead(new Pawn(Color.WHITE,new Coordenada((char) ('A' + i),2),this));
 				}
 			
+				addToPanel();
 	
 				
 		
+	}
+	
+	private void addToPanel() {
+		
+		add(getNewLabel(""));
+		for(int i = 0;i<8;i++)
+			add(getNewLabel(String.valueOf((char)('A'+i))));
+		add(getNewLabel(""));
+		
+		for(int fil=8;fil>=1;fil--) {
+			add(getNewLabel(String.valueOf(fil)));
+			for(int col=0;col<8;col++) {
+				Celda celda = tablero.get(new Coordenada((char)('A' + col),fil));
+				if((fil+col)%2==0)
+					celda.setCellBackground(Color.WHITE);
+				else 
+					celda.setCellBackground(Color.BLACK);
+				
+				add(celda);
+			}
+			add(getNewLabel(String.valueOf(fil)));			
+		}
+		
+		
+		add(getNewLabel(""));
+		for(int i = 0;i<8;i++)
+			add(getNewLabel(String.valueOf((char)('A'+i))));
+		add(getNewLabel(""));
 	}
 	
 	public void move(Coordenada origen, Coordenada destino) {
@@ -90,11 +140,7 @@ public class Tablero {
 
 	
 	public Celda getCelda(Coordenada coordenada) {
-		
-		if(this.coordenadaEnTablero(coordenada)) 
-			return tablero[8 - coordenada.getEjeY()][coordenada.getEjeX() - 'A'];
-		
-		return null;
+		return tablero.get(coordenada);
 	}
 	
 	public void saveRemovedPiece(Pieza p) {
@@ -110,418 +156,19 @@ public class Tablero {
 		
 	}
 	
-	
-	
-	public String Print(Color color) {
-		switch(color) {
-		case WHITE: 
-			return PrintAsWhite();
-			
-		case BLACK: 
-			return PrintAsBlack();
-		default: 
-			return "";
-			
-		}
-	}
-	
-	private String PrintAsBlack() {
-		int i = 1;
-		String visualizar = "  A   B   C   D   E   F   G   H" + "\n";
-		for(int fila = 8; fila > -2; fila --) {
-			for(int col = 0; col <tablero[0].length +9; col++) {
-				if(fila == -1) {
-					visualizar += " ╚═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╝";
-					col = tablero[0].length + 9;
-				} else {
-				if(fila == 8) {
-					visualizar += " ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗";
-					col = tablero[0].length + 9;
-				} else {
-					if(col == 0 || col == 16) {
-						if(col == 0) {
-							visualizar += i;
-						}
-						visualizar += "║";
-					} else if (col%2 == 0){
-						visualizar += "│";
-					} else {
-						if(col == 1) {
-							
-						}
-						visualizar += " " + tablero[fila][col/2] + " ";
-					}
-					
-				}
-				
-					
-				
+	private JLabel getNewLabel(String text) {
 		
-		}
-			}
-			if(fila == -1 ) {
-				visualizar += "";
-			} else if(fila == 8 || fila == 0) {
-				visualizar += "\n";
-			} else {
-			
-				visualizar += "\n";
-				visualizar += " ╟───┼───┼───┼───┼───┼───┼───┼───╢";
-				visualizar += "\n";
-				i++;
-				
-			}
-			
-				
-			
-		}
-		
-		
-		if(this.whiteCheck() == true ) {
-			visualizar += pintarBajoRojoNegro();
-		} else if(this.blackCheck() == true) {
-			visualizar += pintarBajoRojoBlanco();
-		} else {
-			visualizar += pintarBajo();
-		}
-		
-
-		
-		return visualizar;
-	
-	
+		JLabel label = new JLabel(text);
+		label.setOpaque(true);
+		label.setHorizontalAlignment(SwingConstants.CENTER);
+		label.setBackground(java.awt.Color.DARK_GRAY);
+		label.setForeground(java.awt.Color.WHITE);
+		return label;
 		
 	}
 	
 	
-	
-	
-	
 
-	private String PrintAsWhite() {
-		int i = 8;
-		String visualizar = "   A   B   C   D   E   F   G   H" + "\n";
-		for(int fila = -1; fila < tablero.length +1; fila ++) {
-			for(int col = 0; col <tablero[0].length +9; col++) {
-				if(fila == 8) {
-					visualizar += " ╚═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╝";
-					col = tablero[0].length + 9;
-				} else {
-				if(fila == -1) {
-					visualizar += " ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗";
-					col = tablero[0].length + 9;
-				} else {
-					if(col == 0 || col == 16) {
-						if(col == 0) 
-							visualizar += i;
-						visualizar += "║";
-					} else if (col%2 == 0){
-						visualizar += "│";
-					} else {
-						visualizar += " " + tablero[fila][col/2] + " ";
-					}
-					
-				}
-				
-					
-				
-		
-		}
-			}
-			if(fila == 8 ) {
-				visualizar += "";
-			} else if(fila == -1 || fila == 7) {
-				visualizar += "\n";
-			} else {
-			
-				visualizar += "\n";
-				visualizar += " ╟───┼───┼───┼───┼───┼───┼───┼───╢";
-				visualizar += "\n";
-				i --;
-	
-			}
-			
-			
-			
-				
-			
-		}
-		
-		if(this.whiteCheck() == true ) {
-			visualizar += pintarBajoRojoNegro();
-		} else if(this.blackCheck() == true) {
-			visualizar += pintarBajoRojoBlanco();
-		} else {
-			visualizar += pintarBajo();
-		}
-		
-
-		
-		
-		
-		return visualizar;
-	
-	
-		
-	}
-	
-	public String pintarBajo() {
-		String pintar = "";
-		
-
-
-		
-		pintar = "\n╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗ \n";
-		for(int i = 0; i <= 24; i++) {
-			if(i == 0) {
-				pintar += "║";
-			} else if(i == 24) {
-				pintar += "║\n";
-			} else if(i % 2 == 0){
-				pintar += "│";
-			} else if(i == 1) {
-				pintar += " " + new Pawn(Color.WHITE) + " ";	
-			} else if(i == 3){
-				pintar += " " + new Rook(Color.WHITE) + " ";
-			} else if(i == 5) {
-				pintar += " " + new Bishop(Color.WHITE) + " ";
-			} else if(i == 7) {
-				pintar += " " + new Knight(Color.WHITE) + " ";
-			} else if(i == 9) {
-				pintar += " " + new Queen(Color.WHITE) + " ";
-			} else if(i == 11) {
-				pintar += " " + new King(Color.WHITE) + " ";
-			} else if(i == 13) {
-				pintar += " " + new Pawn(Color.BLACK) + " ";
-			} else if(i == 15) {
-				pintar += " " + new Rook(Color.BLACK) + " ";
-			} else if(i == 17) {
-				pintar += " " + new Bishop(Color.BLACK) + " ";
-			} else if(i == 19) {
-				pintar += " " + new Knight(Color.BLACK) + " ";
-			} else if(i == 21) {
-				pintar += " " + new Queen(Color.BLACK) + " ";
-			} else if(i == 23) {
-				pintar += " " + new King(Color.BLACK) + " ";
-			}
-		}
-		
-		pintar += "╟───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───╢\n";
-		
-		
-		
-		for(int i = 0; i <= 24; i++) {
-			if(i == 0) {
-				pintar += "║";
-			} else if(i == 24) {
-				pintar += "║\n";
-			} else if(i % 2 == 0){
-				pintar += "│";
-			}else if(i == 1) {
-				pintar += " " + blancas.contar(new Pawn(Color.WHITE)) + " ";	
-			} else if(i == 3){
-				pintar += " " + blancas.contar(new Rook(Color.WHITE)) + " ";
-			} else if(i == 5) {
-				pintar += " " + blancas.contar(new Bishop(Color.WHITE)) + " ";
-			} else if(i == 7) {
-				pintar += " " + blancas.contar(new Knight(Color.WHITE)) + " ";
-			} else if(i == 9) {
-				pintar += " " + blancas.contar(new Queen(Color.WHITE)) + " ";
-			} else if(i == 11) {
-				pintar += " " + blancas.contar(new King(Color.WHITE)) + " ";
-			} else if(i == 13) {
-				pintar += " " +	negras.contar(new Pawn(Color.BLACK)) + " ";
-			} else if(i == 15) {
-				pintar += " " + negras.contar(new Rook(Color.BLACK)) + " ";
-			} else if(i == 17) {
-				pintar += " " + negras.contar(new Bishop(Color.BLACK)) + " ";
-			} else if(i == 19) {
-				pintar += " " + negras.contar(new Knight(Color.BLACK)) + " ";
-			} else if(i == 21) {
-				pintar += " " + negras.contar(new Queen(Color.BLACK)) + " ";
-			} else if(i == 23) {
-				pintar += " " + negras.contar(new King(Color.BLACK)) + " ";
-			}	
-		}
-		
-		pintar += "╚═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╝";
-		
-		return pintar;
-		
-		
-	}
-	
-	public String pintarBajoRojoBlanco() {
-		String pintar = "";
-		
-
-
-		
-		pintar = "\n╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗ \n";
-		for(int i = 0; i <= 24; i++) {
-			if(i == 0) {
-				pintar += "║";
-			} else if(i == 24) {
-				pintar += "║\n";
-			} else if(i % 2 == 0){
-				pintar += "│";
-			} else if(i == 1) {
-				pintar += " " + new Pawn(Color.WHITE) + " ";	
-			} else if(i == 3){
-				pintar += " " + new Rook(Color.WHITE) + " ";
-			} else if(i == 5) {
-				pintar += " " + new Bishop(Color.WHITE) + " ";
-			} else if(i == 7) {
-				pintar += " " + new Knight(Color.WHITE) + " ";
-			} else if(i == 9) {
-				pintar += " " + new Queen(Color.WHITE) + " ";
-			} else if(i == 11) {
-				pintar += " " + "\u001B[31m" + new King(Color.WHITE) + " " + "\u001B[0m";
-			} else if(i == 13) {
-				pintar += " " + new Pawn(Color.BLACK) + " ";
-			} else if(i == 15) {
-				pintar += " " + new Rook(Color.BLACK) + " ";
-			} else if(i == 17) {
-				pintar += " " + new Bishop(Color.BLACK) + " ";
-			} else if(i == 19) {
-				pintar += " " + new Knight(Color.BLACK) + " ";
-			} else if(i == 21) {
-				pintar += " " + new Queen(Color.BLACK) + " ";
-			} else if(i == 23) {
-				pintar += " " + new King(Color.BLACK) + " ";
-			}
-		}
-		
-		pintar += "╟───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───╢\n";
-		
-		
-		
-		for(int i = 0; i <= 24; i++) {
-			if(i == 0) {
-				pintar += "║";
-			} else if(i == 24) {
-				pintar += "║\n";
-			} else if(i % 2 == 0){
-				pintar += "│";
-			}else if(i == 1) {
-				pintar += " " + blancas.contar(new Pawn(Color.WHITE)) + " ";	
-			} else if(i == 3){
-				pintar += " " + blancas.contar(new Rook(Color.WHITE)) + " ";
-			} else if(i == 5) {
-				pintar += " " + blancas.contar(new Bishop(Color.WHITE)) + " ";
-			} else if(i == 7) {
-				pintar += " " + blancas.contar(new Knight(Color.WHITE)) + " ";
-			} else if(i == 9) {
-				pintar += " " + blancas.contar(new Queen(Color.WHITE)) + " ";
-			} else if(i == 11) {
-				pintar += " " + blancas.contar(new King(Color.WHITE)) + " ";
-			} else if(i == 13) {
-				pintar += " " +	negras.contar(new Pawn(Color.BLACK)) + " ";
-			} else if(i == 15) {
-				pintar += " " + negras.contar(new Rook(Color.BLACK)) + " ";
-			} else if(i == 17) {
-				pintar += " " + negras.contar(new Bishop(Color.BLACK)) + " ";
-			} else if(i == 19) {
-				pintar += " " + negras.contar(new Knight(Color.BLACK)) + " ";
-			} else if(i == 21) {
-				pintar += " " + negras.contar(new Queen(Color.BLACK)) + " ";
-			} else if(i == 23) {
-				pintar += " " + negras.contar(new King(Color.BLACK)) + " ";
-			}	
-		}
-		
-		pintar += "╚═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╝";
-		
-		return pintar;
-		
-		
-	}
-	
-	public String pintarBajoRojoNegro() {
-		String pintar = "";
-		
-
-
-		
-		pintar = "\n╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗ \n";
-		for(int i = 0; i <= 24; i++) {
-			if(i == 0) {
-				pintar += "║";
-			} else if(i == 24) {
-				pintar += "║\n";
-			} else if(i % 2 == 0){
-				pintar += "│";
-			} else if(i == 1) {
-				pintar += " " + new Pawn(Color.WHITE) + " ";	
-			} else if(i == 3){
-				pintar += " " + new Rook(Color.WHITE) + " ";
-			} else if(i == 5) {
-				pintar += " " + new Bishop(Color.WHITE) + " ";
-			} else if(i == 7) {
-				pintar += " " + new Knight(Color.WHITE) + " ";
-			} else if(i == 9) {
-				pintar += " " + new Queen(Color.WHITE) + " ";
-			} else if(i == 11) {
-				pintar += " "  + new King(Color.WHITE) + " " ;
-			} else if(i == 13) {
-				pintar += " " + new Pawn(Color.BLACK) + " ";
-			} else if(i == 15) {
-				pintar += " " + new Rook(Color.BLACK) + " ";
-			} else if(i == 17) {
-				pintar += " " + new Bishop(Color.BLACK) + " ";
-			} else if(i == 19) {
-				pintar += " " + new Knight(Color.BLACK) + " ";
-			} else if(i == 21) {
-				pintar += " " + new Queen(Color.BLACK) + " ";
-			} else if(i == 23) {
-				pintar += " " + "\u001B[31m" + new King(Color.BLACK) + " " + "\u001B[0m";
-			}
-		}
-		
-		pintar += "╟───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───╢\n";
-		
-		
-		
-		for(int i = 0; i <= 24; i++) {
-			if(i == 0) {
-				pintar += "║";
-			} else if(i == 24) {
-				pintar += "║\n";
-			} else if(i % 2 == 0){
-				pintar += "│";
-			}else if(i == 1) {
-				pintar += " " + blancas.contar(new Pawn(Color.WHITE)) + " ";	
-			} else if(i == 3){
-				pintar += " " + blancas.contar(new Rook(Color.WHITE)) + " ";
-			} else if(i == 5) {
-				pintar += " " + blancas.contar(new Bishop(Color.WHITE)) + " ";
-			} else if(i == 7) {
-				pintar += " " + blancas.contar(new Knight(Color.WHITE)) + " ";
-			} else if(i == 9) {
-				pintar += " " + blancas.contar(new Queen(Color.WHITE)) + " ";
-			} else if(i == 11) {
-				pintar += " " + blancas.contar(new King(Color.WHITE)) + " ";
-			} else if(i == 13) {
-				pintar += " " +	negras.contar(new Pawn(Color.BLACK)) + " ";
-			} else if(i == 15) {
-				pintar += " " + negras.contar(new Rook(Color.BLACK)) + " ";
-			} else if(i == 17) {
-				pintar += " " + negras.contar(new Bishop(Color.BLACK)) + " ";
-			} else if(i == 19) {
-				pintar += " " + negras.contar(new Knight(Color.BLACK)) + " ";
-			} else if(i == 21) {
-				pintar += " " + negras.contar(new Queen(Color.BLACK)) + " ";
-			} else if(i == 23) {
-				pintar += " " + negras.contar(new King(Color.BLACK)) + " ";
-			}	
-		}
-		
-		pintar += "╚═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╝";
-		
-		return pintar;
-		
-		
-	}
 	
 	
 	
@@ -551,11 +198,7 @@ public class Tablero {
 		return negras;
 	}
 
-	public void pruebas() {
 
-		
-		
-	}
 	
 	
 	public boolean blackCheck() {

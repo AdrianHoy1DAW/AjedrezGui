@@ -86,6 +86,13 @@ public class Coordenada implements Serializable {
 				return false;
 			}
 		}
+	
+	@Override
+	public int hashCode() {
+		
+		return ejeY;
+		
+	}
 			
 	
 	

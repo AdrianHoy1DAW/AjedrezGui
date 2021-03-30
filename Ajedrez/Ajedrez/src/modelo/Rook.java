@@ -12,16 +12,11 @@ public class Rook extends Pieza {
 		} else {
 			tipo = Tipo.BLACK_ROOK;
 		}
+		colocate(posicion);
 		
 	}
 	
-	public Rook(Color color) {
-		if(color == Color.WHITE) {
-			tipo = Tipo.WHITE_ROOK;
-		} else {
-			tipo = Tipo.BLACK_ROOK;
-		}
-	}
+
 
 	@Override
 	public Lista<Coordenada> getNextMoves() {

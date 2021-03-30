@@ -13,15 +13,10 @@ public class Knight extends Pieza {
 		} else {
 			tipo = Tipo.BLACK_KNIGHT;
 		}
+		colocate(posicion);
 	}
 	
-	public Knight(Color color) {
-		if(color == Color.WHITE) {
-			tipo = Tipo.WHITE_KNIGHT;
-		} else {
-			tipo = Tipo.BLACK_KNIGHT;
-		}
-	}
+
 
 	@Override
 	public Lista<Coordenada> getNextMoves() {

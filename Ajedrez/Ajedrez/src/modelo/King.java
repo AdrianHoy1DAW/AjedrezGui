@@ -14,15 +14,10 @@ public class King extends Pieza{
 		} else {
 			tipo = Tipo.BLACK_KING;
 		}
+		colocate(posicion);
 	}
 	
-	public King(Color color) {
-		if(color == Color.WHITE) {
-			tipo = Tipo.WHITE_KING;
-		} else {
-			tipo = Tipo.BLACK_KING;
-		}
-	}
+
 
 	@Override
 	public Lista<Coordenada> getNextMoves() {

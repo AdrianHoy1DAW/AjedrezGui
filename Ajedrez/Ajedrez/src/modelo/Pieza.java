@@ -1,3 +1,4 @@
+
 package modelo;
 
 import entrada.Coordenada;
@@ -13,14 +14,11 @@ public abstract class Pieza {
 		super();
 		this.posicion = posicion;
 		this.tablero = tablero;
-		colocate(posicion);
-	}
-	
-	public Pieza() {
 		
 	}
 	
-	private void colocate(Coordenada c) {
+
+	protected void colocate(Coordenada c) {
 		
 		tablero.getCelda(posicion).setPieza(null);
 		posicion = c;
@@ -74,6 +72,12 @@ public abstract class Pieza {
 	}
 	
 	
+	
+	
+	public Tipo getTipo() {
+		return tipo;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if(o instanceof Pieza) {
