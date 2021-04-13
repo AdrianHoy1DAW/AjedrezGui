@@ -46,7 +46,7 @@ public class Tablero extends JPanel{
 				tablero.put(new Coordenada((char)('A'+col),1+fila),new Celda());
 		}
 		
-		System.out.println(tablero);
+	
 		
 		
 		

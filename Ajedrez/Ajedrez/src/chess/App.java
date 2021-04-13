@@ -3,8 +3,7 @@ package chess;
 import java.awt.EventQueue;
 import java.util.Scanner;
 
-
-
+import configuracion.MyConfig;
 import controlador.ControladorJuego;
 
 import modelo.Player;
@@ -22,6 +21,7 @@ public class App {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					try {
+						MyConfig.getInstance();
 						VistaChess frame = new VistaChess();
 						ControladorJuego c = new ControladorJuego(frame);
 						c.go();
@@ -31,6 +31,8 @@ public class App {
 				}
 			});
 		}
+		
+		
 		
 	
 		

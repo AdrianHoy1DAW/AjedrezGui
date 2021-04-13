@@ -1,26 +1,59 @@
 package controlador;
 
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JColorChooser;
+
+import configuracion.MyConfig;
 import entrada.Coordenada;
 import entrada.Herramientas;
+import modelo.Celda;
 import modelo.Color;
-
+import modelo.Pieza;
 import modelo.Player;
 import modelo.Tablero;
 import vista.VistaChess;
+import vista.VistaPropiedades;
 
-public class ControladorJuego {
+public class ControladorJuego implements ActionListener{
 
 
-	private Tablero tablero;
+	
 	private Color turno;
 	private VistaChess vista = new VistaChess();
+	private VistaPropiedades propiedades;
+	private Pieza piezaSeleccionada;
 	
 	
 	public ControladorJuego(VistaChess vista) {
 
-		tablero = new Tablero();
-		turno = Color.WHITE;
+		
+		
 		this.vista = vista;
+		
+		inicializar();
+	}
+	
+	private void inicializar() {
+		
+		turno = Color.WHITE;
+		
+		Component[] components = vista.getPanelTablero().getComponents();
+		
+		for(Component component : components) {
+			
+			if(component instanceof Celda) {
+				((Celda) component).addActionListener(this);
+			}
+			
+		}
+		
+		vista.getMntmProperties().addActionListener(this);
+		
+		vista.getMntmProperties().setActionCommand("Abrir preferencias");
+		
 	}
 	
 
@@ -106,6 +139,54 @@ public class ControladorJuego {
 	
 	private void CambiarTurno() {
 		turno = Color.values()[(turno.ordinal() +1) % Color.values().length];
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		String comando = arg0.getActionCommand();
+		
+		if(comando.equals("Abrir preferencias")) {
+			
+			abrirPreferencias();
+			
+		} else if(comando.equals("Cambiar color celda blanca")) {
+			
+			cambiarColorCeldaBlanca();
+			
+		}
+		
+		
+	}
+
+	private void cambiarColorCeldaBlanca() {
+		
+		java.awt.Color color = JColorChooser.showDialog(propiedades.getBtnColorCeldaBlanca(),"Selecciona un color",propiedades.getBtnColorCeldaBlanca().getBackground());
+		
+		if(color != null) {
+			
+			propiedades.getBtnColorCeldaBlanca().setBackground(color);
+			MyConfig.getInstance().setWhiteCellColor(color);
+			
+		}
+		
+	}
+
+	private void abrirPreferencias() {
+		
+		propiedades = new VistaPropiedades();
+		
+		propiedades.setVisible(true);
+		
+		//Add Action Listener
+		propiedades.getBtnColorCeldaBlanca().addActionListener(this);
+		propiedades.getBtnColorCeldaNegra().addActionListener(this);
+		propiedades.getBtnBordeNormal().addActionListener(this);
+		propiedades.getBtnBordeComer().addActionListener(this);
+		
+		//Add Action Command
+		propiedades.getBtnColorCeldaBlanca().setActionCommand("Cambiar color celda blanca");
+		
+		
 	}
 	
 	
