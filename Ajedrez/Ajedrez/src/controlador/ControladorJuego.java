@@ -3,8 +3,11 @@ package controlador;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Set;
 
 import javax.swing.JColorChooser;
+import javax.swing.JOptionPane;
+import javax.swing.border.LineBorder;
 
 import configuracion.MyConfig;
 import entrada.Coordenada;
@@ -24,7 +27,7 @@ public class ControladorJuego implements ActionListener{
 	private Color turno;
 	private VistaChess vista = new VistaChess();
 	private VistaPropiedades propiedades;
-	private Pieza piezaSeleccionada;
+	private Pieza piezaSeleccionada = null;
 	
 	
 	public ControladorJuego(VistaChess vista) {
@@ -61,80 +64,9 @@ public class ControladorJuego implements ActionListener{
 	public void go() {
 		
 		vista.setVisible(true);
-//		while(tablero.contieneReyBlanco() == false && tablero.contieneReyNegro() == false) {
-//			switch(turno) {
-//			case WHITE:
-//				turnoJugador(Color.WHITE);
-//				Herramientas.clear();
-//				if(tablero.whiteCheck() == true) {
-//					Herramientas.Mensaje("El rey negro esta en jaque");
-//				}
-//				break;
-//			case BLACK:
-//				turnoJugador(Color.BLACK);
-//				Herramientas.clear();
-//				if(tablero.blackCheck() == true) {
-//					Herramientas.Mensaje("El rey blanco esta en jaque");
-//				}
-//				break;
-//			}
-//		}
-//		if(tablero.contieneReyBlanco() == false) {
-//			Herramientas.Mensaje("Las blancas ganan");
-//			System.out.println(tablero.Print(turno));
-//		} else {
-//			Herramientas.Mensaje("Las negras ganan");
-//			System.out.println(tablero.Print(turno));
-//		}
-//		
+
+	
 	}
-//	
-//	public void turnoJugador(Color color) {
-//		Coordenada coordenada = null;
-//		Coordenada destino = null;
-//		boolean sePuedeMover = false;
-//		
-//		while(sePuedeMover == false) {
-//			System.out.println(tablero.Print(turno));
-//			Herramientas.Mensaje("Qué ficha quieres mover");
-//			coordenada = Herramientas.obtenerCoordenada();
-//			if(tablero.getCelda(coordenada).contienePieza() == true) {
-//				if(tablero.getCelda(coordenada).getPieza().getColor() == turno) {
-//					if(tablero.getCelda(coordenada).getPieza().canMove() == true) {
-//						sePuedeMover = true;
-//					} else {
-//						Herramientas.clear();
-//						Herramientas.Mensaje("Esa ficha no se puede mover");
-//					}
-//				} else {
-//					Herramientas.clear();
-//					Herramientas.Mensaje("Esa ficha no es de tu color");
-//				} 
-//			}	else {
-//				Herramientas.clear();
-//				Herramientas.Mensaje("En esa posición no hay una ficha");
-//			
-//				} 
-//
-//		}
-//		
-//		
-//		while(turno == color) {
-//					Herramientas.Mensaje("A donde la quieres mover");
-//					destino = Herramientas.obtenerCoordenada();
-//					if(tablero.getCelda(coordenada).getPieza().cantMoveTo(destino)) {
-//						tablero.move(coordenada, destino);
-//						CambiarTurno();
-//					} else {
-//						Herramientas.clear();
-//						Herramientas.Mensaje("No se puede mover ahí");
-//					}
-//			
-//					
-//			} 
-//		}
-	
-	
 	
 	
 	private void CambiarTurno() {
@@ -153,9 +85,90 @@ public class ControladorJuego implements ActionListener{
 			
 			cambiarColorCeldaBlanca();
 			
+		} else if(comando.equals("Cambiar color celda negra")) {
+			
+			cambiarColorCeldaNegra();
+			
+		} else if(arg0.getSource() instanceof Celda) {
+			
+			comprobarMovimiento((Celda)arg0.getSource());
+			
 		}
 		
 		
+	}
+
+	private void comprobarMovimiento(Celda c) {
+		
+		if(piezaSeleccionada==null) {
+			movimientoSinPiezaSeleccionada(c);
+		} else {
+			movimientoConPiezaSeleccionada(c);
+		}
+		
+	}
+
+	private void movimientoConPiezaSeleccionada(Celda c) {
+		Tablero tablero = (Tablero)vista.getPanelTablero();
+		Coordenada coor = tablero.getCoordenadaFromCell(c);
+		
+		if(piezaSeleccionada.getNextMoves().contains(coor) == false) {
+			JOptionPane.showMessageDialog(vista, "No puedes mover ahi", "Error", JOptionPane.ERROR_MESSAGE);
+
+		} else {
+			for(Coordenada coordenada : piezaSeleccionada.getNextMoves()) {
+				tablero.getCelda(coordenada).setBorder(new LineBorder(java.awt.Color.gray,1));
+			}
+			piezaSeleccionada.move(coor);
+			piezaSeleccionada = null;
+			CambiarTurno();
+			if(tablero.whiteCheck()) {
+				JOptionPane.showMessageDialog(vista, "El rey negro esta en jaque", "Info", JOptionPane.INFORMATION_MESSAGE);
+
+			} else if(tablero.blackCheck()) {
+				JOptionPane.showMessageDialog(vista, "El rey blanco esta en jaque", "Info", JOptionPane.INFORMATION_MESSAGE);
+
+			}
+			if(!tablero.getBlancas().contains(tablero.getWhiteKing())) {
+				JOptionPane.showMessageDialog(vista, "Las blancas pierden", "Info", JOptionPane.INFORMATION_MESSAGE);
+			} else if(!tablero.getNegras().contains(tablero.getBlackKing())) {
+				JOptionPane.showMessageDialog(vista, "Las negras pierden", "Info", JOptionPane.INFORMATION_MESSAGE);
+			}
+
+			
+		}
+		
+	}
+
+	private void movimientoSinPiezaSeleccionada(Celda c) {
+		
+		if(!c.contienePieza()) {
+			JOptionPane.showMessageDialog(vista, "Debes seleccionar una pieza", "Error", JOptionPane.ERROR_MESSAGE);
+		} else if(c.getPieza().getColor()!=turno) {
+			JOptionPane.showMessageDialog(vista, "Debes seleccionar una pieza de tu color", "Error", JOptionPane.ERROR_MESSAGE);
+		} else if(c.getPieza().getNextMoves().size()==0) {
+			JOptionPane.showMessageDialog(vista, "Esa pieza no la puedes mover", "Error", JOptionPane.ERROR_MESSAGE);
+		} else {
+			piezaSeleccionada = c.getPieza();
+			posiblesDestinos();
+			
+		}
+		
+		
+
+		
+	}
+
+	private void posiblesDestinos() {
+		Set<Coordenada> posiblesMovimientos = piezaSeleccionada.getNextMoves();
+		Tablero tablero = (Tablero)vista.getPanelTablero();
+		for(Coordenada coor : posiblesMovimientos)  {
+			Celda celda = tablero.getCelda(coor);
+			if(!celda.contienePieza())
+				celda.resaltar(Celda.colorBordeCelda, 2);
+			else
+				celda.resaltar(Celda.colorBordeCeldaComer, 2);
+		}
 	}
 
 	private void cambiarColorCeldaBlanca() {
@@ -166,9 +179,25 @@ public class ControladorJuego implements ActionListener{
 			
 			propiedades.getBtnColorCeldaBlanca().setBackground(color);
 			MyConfig.getInstance().setWhiteCellColor(color);
+			Celda.colorCeldaBlanca = color;
+			((Tablero)vista.getPanelTablero()).repaintBoard();
 			
 		}
 		
+	}
+	
+	private void cambiarColorCeldaNegra() {
+		
+		java.awt.Color color = JColorChooser.showDialog(propiedades.getBtnColorCeldaNegra(), "Selecciona un color", propiedades.getBtnColorCeldaNegra().getBackground());
+		
+		if(color != null) {
+			
+			propiedades.getBtnColorCeldaNegra().setBackground(color);
+			MyConfig.getInstance().setBlackCellColor(color);
+			Celda.colorCeldaNegra = color;
+			((Tablero)vista.getPanelTablero()).repaintBoard();
+			
+		}
 	}
 
 	private void abrirPreferencias() {
@@ -185,6 +214,7 @@ public class ControladorJuego implements ActionListener{
 		
 		//Add Action Command
 		propiedades.getBtnColorCeldaBlanca().setActionCommand("Cambiar color celda blanca");
+		propiedades.getBtnColorCeldaNegra().setActionCommand("Cambiar color celda negra");
 		
 		
 	}

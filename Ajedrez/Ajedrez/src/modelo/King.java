@@ -1,6 +1,9 @@
 
 package modelo;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import entrada.Coordenada;
 
 public class King extends Pieza{
@@ -20,9 +23,9 @@ public class King extends Pieza{
 
 
 	@Override
-	public Lista<Coordenada> getNextMoves() {
+	public Set<Coordenada> getNextMoves() {
 		
-		Lista<Coordenada> lista = new Lista<Coordenada>();
+		Set<Coordenada> lista = new HashSet<Coordenada>();
 		
 		addCoordenada(posicion.up(), lista);
 		addCoordenada(posicion.rightUp(), lista);
@@ -36,15 +39,15 @@ public class King extends Pieza{
 		return lista;
 	}
 
-	private void addCoordenada(Coordenada p, Lista<Coordenada> lista) {
+	private void addCoordenada(Coordenada p, Set<Coordenada> lista) {
 		if(tablero.coordenadaEnTablero(p)) {
 			if(tablero.getCelda(p).contienePieza()) {
 				if(tablero.getCelda(p).getPieza().getColor() != getColor()) {
-					lista.addHead(p);
+					lista.add(p);
 				}
 					
 			} else {
-				lista.addHead(p);
+				lista.add(p);
 			}
 		}
 		

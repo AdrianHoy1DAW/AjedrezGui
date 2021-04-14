@@ -1,5 +1,8 @@
 package modelo;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import entrada.Coordenada;
 
 public class Rook extends Pieza {
@@ -19,58 +22,58 @@ public class Rook extends Pieza {
 
 
 	@Override
-	public Lista<Coordenada> getNextMoves() {
+	public Set<Coordenada> getNextMoves() {
 		
 		return movementAsRook(tablero,this);
 
 	}
 	
-	public static Lista<Coordenada> movementAsRook(Tablero tablero, Pieza p) {
+	public static Set<Coordenada> movementAsRook(Tablero tablero, Pieza p) {
 		
-		Lista<Coordenada> lista = new Lista<Coordenada>();
+		Set<Coordenada> lista = new HashSet<Coordenada>();
 		Coordenada aux = p.posicion;
 		
 		while(tablero.coordenadaEnTablero(aux.up()) == true && tablero.getCelda(aux.up()).contienePieza() == false) {
-			lista.addHead(aux.up());
+			lista.add(aux.up());
 			aux = aux.up();
 		}
 		
 		if(tablero.coordenadaEnTablero(aux.up()))
 				if(tablero.getCelda(aux.up()).getPieza().getColor() != p.getColor())
-					lista.addHead(aux.up());
+					lista.add(aux.up());
 		
 		aux = p.posicion;
 		
 		while(tablero.coordenadaEnTablero(aux.right()) == true && tablero.getCelda(aux.right()).contienePieza() == false) {
-			lista.addHead(aux.right());
+			lista.add(aux.right());
 			aux = aux.right();
 		}
 		
 		if(tablero.coordenadaEnTablero(aux.right()))
 				if(tablero.getCelda(aux.right()).getPieza().getColor() != p.getColor())
-					lista.addHead(aux.right());
+					lista.add(aux.right());
 		
 		aux = p.posicion;
 		
 		while(tablero.coordenadaEnTablero(aux.down()) == true && tablero.getCelda(aux.down()).contienePieza() == false) {
-			lista.addHead(aux.down());
+			lista.add(aux.down());
 			aux = aux.down();
 		}
 		
 		if(tablero.coordenadaEnTablero(aux.down()))
 				if(tablero.getCelda(aux.down()).getPieza().getColor() != p.getColor())
-					lista.addHead(aux.down());
+					lista.add(aux.down());
 			
 		aux = p.posicion;
 		
 		while(tablero.coordenadaEnTablero(aux.left()) == true && tablero.getCelda(aux.left()).contienePieza() == false) {
-			lista.addHead(aux.left());
+			lista.add(aux.left());
 			aux = aux.left();
 		}
 		
 		if(tablero.coordenadaEnTablero(aux.left()))
 				if(tablero.getCelda(aux.left()).getPieza().getColor() != p.getColor())
-					lista.addHead(aux.left());
+					lista.add(aux.left());
 		
 		aux = p.posicion;
 		

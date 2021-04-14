@@ -1,5 +1,8 @@
 package modelo;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import entrada.Coordenada;
 
 public class Queen extends Pieza {
@@ -19,9 +22,13 @@ public class Queen extends Pieza {
 
 
 	@Override
-	public Lista<Coordenada> getNextMoves() {
+	public Set<Coordenada> getNextMoves() {
 		
-		return Rook.movementAsRook(tablero, this).juntarListas(Bishop.movementAsBishop(tablero, this));	
+		Set<Coordenada> movimientos = new HashSet<Coordenada>(Rook.movementAsRook(tablero, this));
+		
+		movimientos.addAll(Bishop.movementAsBishop(tablero, this));
+		
+		return movimientos;
 		
 	}
 	

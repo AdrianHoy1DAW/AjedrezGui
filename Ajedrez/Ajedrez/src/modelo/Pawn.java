@@ -1,5 +1,8 @@
 package modelo;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import entrada.Coordenada;
 
 public class Pawn extends Pieza{
@@ -18,9 +21,9 @@ public class Pawn extends Pieza{
 	
 
 	@Override
-	public Lista<Coordenada> getNextMoves() {
+	public Set<Coordenada> getNextMoves() {
 		
-		Lista<Coordenada> lista = new Lista<Coordenada>();
+		Set<Coordenada> lista = new HashSet<Coordenada>();
 		
 		if(this.getColor() == Color.WHITE) {
 			if(tablero.coordenadaEnTablero(posicion.up().left()))
@@ -63,16 +66,17 @@ public class Pawn extends Pieza{
 					addCoordenada(posicion.down().right(), lista);
 				} 
 			
-			if(posicion.getEjeY() == 7) {
-				if(tablero.getCelda(posicion.down().down()).contienePieza() == false)
-					addCoordenada(posicion.down().down(), lista);
-			} 
+
 			
 			if(tablero.coordenadaEnTablero(posicion.down())) {
 				if(tablero.getCelda(posicion.down()).contienePieza()) {
 					
 				} else {
 					addCoordenada(posicion.down(), lista);
+					if(posicion.getEjeY() == 7) {
+						if(tablero.getCelda(posicion.down().down()).contienePieza() == false)
+							addCoordenada(posicion.down().down(), lista);
+					} 
 				}
 			}
 		}
@@ -91,22 +95,22 @@ public class Pawn extends Pieza{
 		super.move(c);
 		if(getColor() == Color.WHITE && posicion.getEjeY() == 8) {
 			tablero.saveRemovedPiece(this);
-			tablero.getBlancas().addHead(new Queen(getColor(),posicion,tablero));
+			tablero.getBlancas().add(new Queen(getColor(),posicion,tablero));
 		} else if(getColor() == Color.BLACK && posicion.getEjeY() == 1) {
 			tablero.saveRemovedPiece(this);
-			tablero.getNegras().addHead(new Queen(getColor(),posicion,tablero));
+			tablero.getNegras().add(new Queen(getColor(),posicion,tablero));
 		}
 	}
 
-	private void addCoordenada(Coordenada p, Lista<Coordenada> lista) {
+	private void addCoordenada(Coordenada p, Set<Coordenada> lista) {
 		if(tablero.coordenadaEnTablero(p)) {
 			if(tablero.getCelda(p).contienePieza()) {
 				if(tablero.getCelda(p).getPieza().getColor() != getColor()) {
-					lista.addHead(p);
+					lista.add(p);
 				}
 					
 			} else {
-				lista.addHead(p);
+				lista.add(p);
 			}
 		}
 		

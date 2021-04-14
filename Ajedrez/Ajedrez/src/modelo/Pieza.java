@@ -1,6 +1,9 @@
 
 package modelo;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import entrada.Coordenada;
 
 public abstract class Pieza {
@@ -82,7 +85,7 @@ public abstract class Pieza {
 	public boolean equals(Object o) {
 		if(o instanceof Pieza) {
 			Pieza p = (Pieza) o;
-			if(tipo == p.tipo) {
+			if(tipo == p.tipo && posicion.equals(p.posicion)) {
 				return true;
 			}
 		} else {
@@ -97,7 +100,7 @@ public abstract class Pieza {
 		return tipo.getForma();
 	}
 	
-	public abstract Lista<Coordenada> getNextMoves();
+	public abstract Set<Coordenada> getNextMoves();
 
 	
 	
