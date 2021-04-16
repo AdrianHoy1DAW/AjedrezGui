@@ -25,7 +25,7 @@ public class Tablero extends JPanel{
 	private Pieza blackKing;
 	private Pieza whiteKing;
 	
-	public Tablero(){
+	public Tablero(){ 
 		super();
 		setBounds(new Rectangle(0, 0, 500, 500));
 		setLayout(new GridLayout(10, 10, 0, 0));
@@ -165,8 +165,7 @@ public class Tablero extends JPanel{
 		if(p.getColor() == Color.WHITE) {
 			
 			blancasEliminadas.add(blancas.remove(blancas.indexOf(p)));
-			System.out.println(blancasEliminadas);
-			System.out.println(blancas);
+
 			
 			
 		} else {

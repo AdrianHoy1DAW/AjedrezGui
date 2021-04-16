@@ -81,18 +81,18 @@ public abstract class Pieza {
 		return tipo;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if(o instanceof Pieza) {
-			Pieza p = (Pieza) o;
-			if(tipo == p.tipo && posicion.equals(p.posicion)) {
-				return true;
-			}
-		} else {
-			return false;
-		}
-		return false;
-	}
+//	@Override
+//	public boolean equals(Object o) {
+//		if(o instanceof Pieza) {
+//			Pieza p = (Pieza) o;
+//			if(tipo == p.tipo && posicion.equals(p.posicion)) {
+//				return true;
+//			}
+//		} else {
+//			return false;
+//		}
+//		return false;
+//	}
 	
 
 	@Override

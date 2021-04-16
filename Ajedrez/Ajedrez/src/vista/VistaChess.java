@@ -16,12 +16,14 @@ import modelo.Tablero;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class VistaChess extends JFrame {
 
 	private JPanel contentPane;
 	private JPanel panelTablero;
 	private JMenuItem mntmProperties;
+	private JPFichasEliminadas panelEliminadas;
 	
 
 
@@ -31,7 +33,7 @@ public class VistaChess extends JFrame {
 	 */
 	public VistaChess() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 820, 653);
+		setBounds(100, 100, 980, 653);
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -47,19 +49,25 @@ public class VistaChess extends JFrame {
 		
 		panelTablero = new Tablero();
 		
+		panelEliminadas = new JPFichasEliminadas();
+		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(panelTablero, GroupLayout.PREFERRED_SIZE, 577, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(221, Short.MAX_VALUE))
+					.addGap(18)
+					.addComponent(panelEliminadas, GroupLayout.PREFERRED_SIZE, 338, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(25, Short.MAX_VALUE))
 		);
 		gl_contentPane.setVerticalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
+			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(panelTablero, GroupLayout.DEFAULT_SIZE, 594, Short.MAX_VALUE)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+						.addComponent(panelEliminadas, GroupLayout.PREFERRED_SIZE, 315, GroupLayout.PREFERRED_SIZE)
+						.addComponent(panelTablero, GroupLayout.DEFAULT_SIZE, 573, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		contentPane.setLayout(gl_contentPane);
@@ -78,8 +86,13 @@ public class VistaChess extends JFrame {
 	public JMenuItem getMntmProperties() {
 		return mntmProperties;
 	}
-	
-	
+
+
+
+
+	public JPFichasEliminadas getPanelEliminadas() {
+		return panelEliminadas;
+	}
 	
 	
 }

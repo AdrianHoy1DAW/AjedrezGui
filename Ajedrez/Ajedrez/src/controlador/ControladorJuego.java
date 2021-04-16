@@ -14,6 +14,7 @@ import entrada.Coordenada;
 import entrada.Herramientas;
 import modelo.Celda;
 import modelo.Color;
+import modelo.GestionFichasEliminadas;
 import modelo.Pieza;
 import modelo.Player;
 import modelo.Tablero;
@@ -28,12 +29,10 @@ public class ControladorJuego implements ActionListener{
 	private VistaChess vista = new VistaChess();
 	private VistaPropiedades propiedades;
 	private Pieza piezaSeleccionada = null;
+	private GestionFichasEliminadas gestionFichasEliminadas;
 	
 	
-	public ControladorJuego(VistaChess vista) {
-
-		
-		
+	public ControladorJuego(VistaChess vista) {	
 		this.vista = vista;
 		
 		inicializar();
@@ -42,6 +41,8 @@ public class ControladorJuego implements ActionListener{
 	private void inicializar() {
 		
 		turno = Color.WHITE;
+		
+		gestionFichasEliminadas = new ControladorFichasEliminadas(vista.getPanelEliminadas());
 		
 		Component[] components = vista.getPanelTablero().getComponents();
 		
@@ -119,25 +120,36 @@ public class ControladorJuego implements ActionListener{
 			for(Coordenada coordenada : piezaSeleccionada.getNextMoves()) {
 				tablero.getCelda(coordenada).setBorder(new LineBorder(java.awt.Color.gray,1));
 			}
+			if(c.contienePieza())
+				gestionFichasEliminadas.addPiece(c.getPieza());
+			
 			piezaSeleccionada.move(coor);
 			piezaSeleccionada = null;
 			CambiarTurno();
-			if(tablero.whiteCheck()) {
-				JOptionPane.showMessageDialog(vista, "El rey negro esta en jaque", "Info", JOptionPane.INFORMATION_MESSAGE);
-
-			} else if(tablero.blackCheck()) {
-				JOptionPane.showMessageDialog(vista, "El rey blanco esta en jaque", "Info", JOptionPane.INFORMATION_MESSAGE);
-
-			}
-			if(!tablero.getBlancas().contains(tablero.getWhiteKing())) {
-				JOptionPane.showMessageDialog(vista, "Las blancas pierden", "Info", JOptionPane.INFORMATION_MESSAGE);
-			} else if(!tablero.getNegras().contains(tablero.getBlackKing())) {
-				JOptionPane.showMessageDialog(vista, "Las negras pierden", "Info", JOptionPane.INFORMATION_MESSAGE);
-			}
+			comprobacionesFinales(tablero);
 
 			
 		}
 		
+	}
+
+	private void comprobacionesFinales(Tablero tablero) {
+		if(tablero.whiteCheck()) {
+			JOptionPane.showMessageDialog(vista, "El rey negro esta en jaque", "Info", JOptionPane.INFORMATION_MESSAGE);
+
+		}  
+		if(tablero.blackCheck()) {
+			JOptionPane.showMessageDialog(vista, "El rey blanco esta en jaque", "Info", JOptionPane.INFORMATION_MESSAGE);
+
+		}
+		if(!tablero.getBlancas().contains(tablero.getWhiteKing())) {
+			JOptionPane.showMessageDialog(vista, "Las blancas pierden", "Info", JOptionPane.INFORMATION_MESSAGE);
+			terminarJuego();
+		} 
+		if(!tablero.getNegras().contains(tablero.getBlackKing())) {
+			JOptionPane.showMessageDialog(vista, "Las negras pierden", "Info", JOptionPane.INFORMATION_MESSAGE);
+			terminarJuego();
+		}
 	}
 
 	private void movimientoSinPiezaSeleccionada(Celda c) {
@@ -218,6 +230,22 @@ public class ControladorJuego implements ActionListener{
 		
 		
 	}
+	
+	private void terminarJuego() {
+		
+		Component[] components = vista.getPanelTablero().getComponents();
+		
+		for(Component component : components) {
+			
+			if(component instanceof Celda) {
+				((Celda) component).setEnabled(false);
+			}
+			
+		}
+		
+	}
+	
+	
 	
 	
 	
