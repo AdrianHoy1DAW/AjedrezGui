@@ -3,16 +3,19 @@ package vista;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
+import modelo.Celda;
 import modelo.Color;
 
 import java.awt.GridLayout;
 import net.miginfocom.swing.MigLayout;
+
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 public class JPTurno extends JPanel {
-	private JLabel lblNewLabel_1;
-	private JLabel lblNewLabel;
-	private Color turno;
+	private JLabel lblSelectedPiece;
+	private JLabel lblTurno;
+	private Color turno = Color.WHITE;
 
 
 	public JPTurno() {
@@ -26,8 +29,8 @@ public class JPTurno extends JPanel {
 		JLabel lblMove = new JLabel("Move");
 		panel_1.add(lblMove, "cell 0 0,alignx center");
 		
-		lblNewLabel = new JLabel("");
-		panel_1.add(lblNewLabel, "cell 0 2,alignx center");
+		lblTurno = new JLabel("");
+		panel_1.add(lblTurno, "cell 0 2,alignx center");
 		
 		JPanel panel = new JPanel();
 		add(panel);
@@ -36,8 +39,11 @@ public class JPTurno extends JPanel {
 		JLabel lblSelected = new JLabel("Selected");
 		panel.add(lblSelected, "cell 0 0,alignx center");
 		
-		lblNewLabel_1 = new JLabel("");
-		panel.add(lblNewLabel_1, "cell 0 1,alignx center");
+		lblSelectedPiece = new JLabel("");
+		panel.add(lblSelectedPiece, "cell 0 1,alignx center");
+		lblTurno.setIcon(new ImageIcon(Celda.class.getResource("/media/b_peon.gif")));
+		
+		
 
 	}
 	
@@ -49,8 +55,24 @@ public class JPTurno extends JPanel {
 	
 	public void cambiarTurno() {
 		
-		
+		turno = Color.values()[(turno.ordinal() +1) % Color.values().length];
+		if(turno == Color.WHITE) {
+			lblTurno.setIcon(new ImageIcon(Celda.class.getResource("/media/b_peon.gif")));
+		} else {
+			lblTurno.setIcon(new ImageIcon(Celda.class.getResource("/media/n_peon.gif")));
+		}
 		
 	}
+
+	public JLabel getLblSelectedPiece() {
+		return lblSelectedPiece;
+	}
+
+	public JLabel getLblTurno() {
+		return lblTurno;
+	}
+	
+	
+	
 
 }

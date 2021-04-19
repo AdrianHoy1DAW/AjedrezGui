@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
 
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
@@ -15,9 +17,13 @@ import entrada.Herramientas;
 import modelo.Celda;
 import modelo.Color;
 import modelo.GestionFichasEliminadas;
+import modelo.Movement;
+
+import modelo.Pawn;
 import modelo.Pieza;
 import modelo.Player;
 import modelo.Tablero;
+import vista.JPTurno;
 import vista.VistaChess;
 import vista.VistaPropiedades;
 
@@ -25,11 +31,13 @@ public class ControladorJuego implements ActionListener{
 
 
 	
-	private Color turno;
+
 	private VistaChess vista = new VistaChess();
 	private VistaPropiedades propiedades;
 	private Pieza piezaSeleccionada = null;
 	private GestionFichasEliminadas gestionFichasEliminadas;
+	private DefaultListModel<Movement> dlm;
+	
 	
 	
 	public ControladorJuego(VistaChess vista) {	
@@ -40,7 +48,7 @@ public class ControladorJuego implements ActionListener{
 	
 	private void inicializar() {
 		
-		turno = Color.WHITE;
+		
 		
 		gestionFichasEliminadas = new ControladorFichasEliminadas(vista.getPanelEliminadas());
 		
@@ -58,6 +66,11 @@ public class ControladorJuego implements ActionListener{
 		
 		vista.getMntmProperties().setActionCommand("Abrir preferencias");
 		
+		dlm = new DefaultListModel<Movement>();
+		vista.getPanelMovements().getList().setModel(dlm);
+		
+		
+		
 	}
 	
 
@@ -70,9 +83,7 @@ public class ControladorJuego implements ActionListener{
 	}
 	
 	
-	private void CambiarTurno() {
-		turno = Color.values()[(turno.ordinal() +1) % Color.values().length];
-	}
+
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
@@ -117,19 +128,53 @@ public class ControladorJuego implements ActionListener{
 			JOptionPane.showMessageDialog(vista, "No puedes mover ahi", "Error", JOptionPane.ERROR_MESSAGE);
 
 		} else {
-			for(Coordenada coordenada : piezaSeleccionada.getNextMoves()) {
-				tablero.getCelda(coordenada).setBorder(new LineBorder(java.awt.Color.gray,1));
-			}
-			if(c.contienePieza())
+			Movement m = null;
+			desmarcarPosiblesDestinos(tablero);
+			if(c.contienePieza()) {
+				if((tablero.getCoordenadaFromCell(c).getEjeY() == 8 || tablero.getCoordenadaFromCell(c).getEjeY() == 1) && piezaSeleccionada instanceof Pawn) {
+					m = new Movement(piezaSeleccionada.getPosicion(),tablero.getCoordenadaFromCell(c),Movement.RISE_AND_KILL,c.getPieza(),null,piezaSeleccionada);
+					
+				} else {
+					m = new Movement(piezaSeleccionada.getPosicion(),tablero.getCoordenadaFromCell(c),Movement.KILL,c.getPieza(),null,null);
+				}
 				gestionFichasEliminadas.addPiece(c.getPieza());
+			}
+			if(m == null && (tablero.getCoordenadaFromCell(c).getEjeY() == 8 || tablero.getCoordenadaFromCell(c).getEjeY() == 1) && piezaSeleccionada instanceof Pawn) {
+				
+				m = new Movement(piezaSeleccionada.getPosicion(),tablero.getCoordenadaFromCell(c),Movement.RISE,null,null,piezaSeleccionada);
+				
+				
+			} else if(m == null) {
+				
+				m = new Movement(piezaSeleccionada.getPosicion(),tablero.getCoordenadaFromCell(c),Movement.NOT_KILL,null,null,null);
+			}
 			
+			dlm.addElement(m);
 			piezaSeleccionada.move(coor);
+			if(m.getTipoAccion() == Movement.RISE || m.getTipoAccion() == Movement.RISE_AND_KILL) {
+				m.setFichaGenerada(c.getPieza());
+			}
+			
 			piezaSeleccionada = null;
-			CambiarTurno();
+			borrarPiezaSeleccionada();
+			vista.getPanelTurno().cambiarTurno();
 			comprobacionesFinales(tablero);
 
 			
 		}
+		
+	}
+
+	private void desmarcarPosiblesDestinos(Tablero tablero) {
+		for(Coordenada coordenada : piezaSeleccionada.getNextMoves()) {
+			tablero.getCelda(coordenada).setBorder(new LineBorder(java.awt.Color.gray,1));
+		}
+	}
+
+	private void borrarPiezaSeleccionada() {
+		
+		vista.getPanelTurno().getLblSelectedPiece().setOpaque(false);
+		vista.getPanelTurno().getLblSelectedPiece().setIcon(null);
 		
 	}
 
@@ -156,18 +201,27 @@ public class ControladorJuego implements ActionListener{
 		
 		if(!c.contienePieza()) {
 			JOptionPane.showMessageDialog(vista, "Debes seleccionar una pieza", "Error", JOptionPane.ERROR_MESSAGE);
-		} else if(c.getPieza().getColor()!=turno) {
+		} else if(c.getPieza().getColor()!=vista.getPanelTurno().getTurno()) {
 			JOptionPane.showMessageDialog(vista, "Debes seleccionar una pieza de tu color", "Error", JOptionPane.ERROR_MESSAGE);
 		} else if(c.getPieza().getNextMoves().size()==0) {
 			JOptionPane.showMessageDialog(vista, "Esa pieza no la puedes mover", "Error", JOptionPane.ERROR_MESSAGE);
 		} else {
 			piezaSeleccionada = c.getPieza();
+			selectPiece();
 			posiblesDestinos();
 			
 		}
 		
 		
 
+		
+	}
+
+	private void selectPiece() {
+		
+		vista.getPanelTurno().getLblSelectedPiece().setOpaque(true);
+		vista.getPanelTurno().getLblSelectedPiece().setIcon(new ImageIcon(Celda.class.getResource("/media/" + piezaSeleccionada.getTipo().getForma())));
+		
 		
 	}
 

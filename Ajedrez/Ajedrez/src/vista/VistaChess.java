@@ -24,6 +24,8 @@ public class VistaChess extends JFrame {
 	private JPanel panelTablero;
 	private JMenuItem mntmProperties;
 	private JPFichasEliminadas panelEliminadas;
+	private JPTurno panelTurno;
+	private JPMovements panelMovements;
 	
 
 
@@ -51,6 +53,10 @@ public class VistaChess extends JFrame {
 		
 		panelEliminadas = new JPFichasEliminadas();
 		
+		panelTurno = new JPTurno();
+		
+		panelMovements = new JPMovements();
+		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -58,15 +64,25 @@ public class VistaChess extends JFrame {
 					.addContainerGap()
 					.addComponent(panelTablero, GroupLayout.PREFERRED_SIZE, 577, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
-					.addComponent(panelEliminadas, GroupLayout.PREFERRED_SIZE, 338, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(25, Short.MAX_VALUE))
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(panelTurno, GroupLayout.PREFERRED_SIZE, 175, GroupLayout.PREFERRED_SIZE)
+							.addGap(18)
+							.addComponent(panelMovements, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addComponent(panelEliminadas, GroupLayout.PREFERRED_SIZE, 351, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap())
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-						.addComponent(panelEliminadas, GroupLayout.PREFERRED_SIZE, 315, GroupLayout.PREFERRED_SIZE)
+						.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(panelMovements, 0, 0, Short.MAX_VALUE)
+								.addComponent(panelTurno, GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE))
+							.addPreferredGap(ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+							.addComponent(panelEliminadas, GroupLayout.PREFERRED_SIZE, 315, GroupLayout.PREFERRED_SIZE))
 						.addComponent(panelTablero, GroupLayout.DEFAULT_SIZE, 573, Short.MAX_VALUE))
 					.addContainerGap())
 		);
@@ -93,6 +109,21 @@ public class VistaChess extends JFrame {
 	public JPFichasEliminadas getPanelEliminadas() {
 		return panelEliminadas;
 	}
+
+
+
+
+	public JPTurno getPanelTurno() {
+		return panelTurno;
+	}
+
+
+
+
+	public JPMovements getPanelMovements() {
+		return panelMovements;
+	}
+	
 	
 	
 }
