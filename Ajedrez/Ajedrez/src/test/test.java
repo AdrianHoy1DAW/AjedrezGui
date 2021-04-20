@@ -6,7 +6,7 @@ import entrada.Herramientas;
 import modelo.Color;
 import modelo.Pawn;
 import modelo.Pieza;
-import modelo.Tablero;
+import modelo.JPTablero;
 import modelo.Tipo;
 
 

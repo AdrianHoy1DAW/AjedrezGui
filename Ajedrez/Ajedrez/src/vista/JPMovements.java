@@ -9,24 +9,29 @@ import javax.swing.JList;
 import java.awt.FlowLayout;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
+import javax.swing.JScrollPane;
 
 public class JPMovements extends JPanel {
-	private JList<Movement> list;
 	private JButton buttonAtras;
 	private JButton btnDelante;
+	private JScrollPane scrollPane;
+	private JList<Movement> list;
 
 	/**
 	 * Create the panel.
 	 */
 	public JPMovements() {
 		setBorder(new TitledBorder(null, "Movements", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		setLayout(new MigLayout("", "[grow]", "[222.00][grow]"));
+		setLayout(new MigLayout("", "[grow]", "[222.00,grow][grow]"));
 		
-		list = new JList<>();
-		add(list, "cell 0 0,grow");
+		scrollPane = new JScrollPane();
+		add(scrollPane, "cell 0 0,grow");
+		
+		list = new JList();
+		scrollPane.setViewportView(list);
 		
 		JPanel panel = new JPanel();
-		add(panel, "cell 0 1,grow");
+		add(panel, "cell 0 1,alignx center,growy");
 		panel.setLayout(new MigLayout("", "[][][][][][][]", "[]"));
 		
 		buttonAtras = new JButton("<");

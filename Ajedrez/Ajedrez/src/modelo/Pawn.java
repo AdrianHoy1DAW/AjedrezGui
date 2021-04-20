@@ -7,7 +7,7 @@ import entrada.Coordenada;
 
 public class Pawn extends Pieza{
 
-	public Pawn(Color color,Coordenada posicion, Tablero tablero) {
+	public Pawn(Color color,Coordenada posicion, JPTablero tablero) {
 		super(posicion, tablero);
 		// TODO Auto-generated constructor stub
 	

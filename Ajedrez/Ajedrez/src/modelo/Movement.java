@@ -86,6 +86,11 @@ public class Movement implements Serializable {
 	
 
 
+	public Pieza getFichaPeon() {
+		return fichaPeon;
+	}
+
+
 	public void setFichaGenerada(Pieza fichaGenerada) {
 		this.fichaGenerada = fichaGenerada;
 	}
@@ -95,6 +100,8 @@ public class Movement implements Serializable {
 	public String toString() {
 		return numeroMovimiento + " - [start=" + origen + " ,end=" + destino + "]";
 	}
+	
+
 
 	
 }

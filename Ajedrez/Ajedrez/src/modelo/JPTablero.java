@@ -15,17 +15,16 @@ import entrada.Coordenada;
 
 
 
-public class Tablero extends JPanel{
+public class JPTablero extends JPanel{
 
 	private HashMap<Coordenada,Celda> tablero;
 	private ArrayList<Pieza> blancas;
 	private ArrayList<Pieza> negras;
-	private ArrayList<Pieza> blancasEliminadas;
-	private ArrayList<Pieza> negrasEliminadas;
+
 	private Pieza blackKing;
 	private Pieza whiteKing;
 	
-	public Tablero(){ 
+	public JPTablero(){ 
 		super();
 		setBounds(new Rectangle(0, 0, 500, 500));
 		setLayout(new GridLayout(10, 10, 0, 0));
@@ -33,8 +32,7 @@ public class Tablero extends JPanel{
 		tablero = new HashMap<Coordenada,Celda>();
 		blancas = new ArrayList<Pieza>();
 		negras = new ArrayList<Pieza>();
-		this.blancasEliminadas = new ArrayList<Pieza>();
-		this.negrasEliminadas = new ArrayList<Pieza>();
+
 		
 		inicializar();
 	}
@@ -138,7 +136,7 @@ public class Tablero extends JPanel{
 	}
 	
 	public boolean contieneReyBlanco() {
-		if(this.getBlancasEliminadas().contains(this.getWhiteKing())) {
+		if(!this.blancas.contains(whiteKing)) {
 			return true;
 		} else {
 			return false;
@@ -147,7 +145,7 @@ public class Tablero extends JPanel{
 	
 	public boolean contieneReyNegro() {
 		
-		if(this.getNegrasEliminadas().contains(this.getBlackKing())) {
+		if(!this.negras.contains(blackKing)) {
 			return true;
 		} else {
 			return false;
@@ -164,13 +162,13 @@ public class Tablero extends JPanel{
 		
 		if(p.getColor() == Color.WHITE) {
 			
-			blancasEliminadas.add(blancas.remove(blancas.indexOf(p)));
+			blancas.remove(blancas.indexOf(p));
 
 			
 			
 		} else {
 			
-			negrasEliminadas.add(negras.remove(negras.indexOf(p)));
+			negras.remove(negras.indexOf(p));
 		}
 		
 	}
@@ -227,13 +225,7 @@ public class Tablero extends JPanel{
 		return whiteKing;
 	}
 
-	public ArrayList<Pieza> getBlancasEliminadas() {
-		return blancasEliminadas;
-	}
 
-	public ArrayList<Pieza> getNegrasEliminadas() {
-		return negrasEliminadas;
-	}
 
 	public ArrayList<Pieza> getBlancas() {
 		return blancas;

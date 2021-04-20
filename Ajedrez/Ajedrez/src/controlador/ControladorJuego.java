@@ -3,6 +3,11 @@ package controlador;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.swing.DefaultListModel;
@@ -17,17 +22,18 @@ import entrada.Herramientas;
 import modelo.Celda;
 import modelo.Color;
 import modelo.GestionFichasEliminadas;
+import modelo.JPTablero;
 import modelo.Movement;
 
 import modelo.Pawn;
 import modelo.Pieza;
 import modelo.Player;
-import modelo.Tablero;
+
 import vista.JPTurno;
 import vista.VistaChess;
 import vista.VistaPropiedades;
 
-public class ControladorJuego implements ActionListener{
+public class ControladorJuego implements ActionListener, MouseListener{
 
 
 	
@@ -37,11 +43,15 @@ public class ControladorJuego implements ActionListener{
 	private Pieza piezaSeleccionada = null;
 	private GestionFichasEliminadas gestionFichasEliminadas;
 	private DefaultListModel<Movement> dlm;
+	private Deque<Movement> stack;
+	
 	
 	
 	
 	public ControladorJuego(VistaChess vista) {	
 		this.vista = vista;
+		
+		stack = new ArrayDeque<Movement>();
 		
 		inicializar();
 	}
@@ -62,9 +72,18 @@ public class ControladorJuego implements ActionListener{
 			
 		}
 		
-		vista.getMntmProperties().addActionListener(this);
+		//Añadir los MouseListener
+		vista.getPanelMovements().getList().addMouseListener(this);
 		
+		//Añadir ActionListener
+		vista.getMntmProperties().addActionListener(this);
+		vista.getPanelMovements().getBtnDelante().addActionListener(this);
+		vista.getPanelMovements().getButtonAtras().addActionListener(this);
+		
+		//Añadir ActionCommand
 		vista.getMntmProperties().setActionCommand("Abrir preferencias");
+		vista.getPanelMovements().getBtnDelante().setActionCommand("Next Movement");
+		vista.getPanelMovements().getButtonAtras().setActionCommand("Previous Movement");
 		
 		dlm = new DefaultListModel<Movement>();
 		vista.getPanelMovements().getList().setModel(dlm);
@@ -105,6 +124,129 @@ public class ControladorJuego implements ActionListener{
 			
 			comprobarMovimiento((Celda)arg0.getSource());
 			
+		} else if(comando.equals("Previous Movement")) {
+			
+			previousMovement();
+			
+		} else if(comando.equals("Next Movement")) {
+			
+			nextMovement();
+			
+		}
+		
+		
+	}
+
+	private void nextMovement() {
+		
+		try {
+			
+			Movement m = stack.pop();
+			dlm.addElement(m);
+			Coordenada origen,destino;
+			
+			origen = m.getOrigen();
+			destino = m.getDestino();
+			
+			switch(m.getTipoAccion()) {
+			case Movement.NOT_KILL : 
+				
+
+				
+				vista.getPanelTablero().getCelda(origen).getPieza().move(destino);
+				
+				break;
+			case Movement.KILL :
+				
+				gestionFichasEliminadas.addPiece(vista.getPanelTablero().getCelda(destino).getPieza());
+				vista.getPanelTablero().getCelda(origen).getPieza().move(destino);
+				
+				
+				
+			break;
+			case Movement.RISE :
+				
+				vista.getPanelTablero().getCelda(origen).getPieza().move(destino);
+				
+				
+				break;
+				
+			default:throw new Exception("Tipo desconocido");
+				
+			}
+			
+			vista.getPanelTurno().cambiarTurno();
+			Movement.increaseNumberOfMovements();
+			
+		
+		} catch (NoSuchElementException ne) {
+		
+			JOptionPane.showMessageDialog(vista, "No hay movimientos para avanzar", "Error", JOptionPane.ERROR_MESSAGE);
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(vista, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		
+	}
+
+	private void previousMovement() {
+		
+		try {
+			
+			Movement m = dlm.remove(dlm.getSize() -1);
+			stack.push(m);
+			Coordenada origen,destino;
+			
+			destino = m.getDestino();
+			origen = m.getOrigen();
+			
+			switch(m.getTipoAccion()) {
+			case Movement.NOT_KILL :
+				
+
+				
+				
+				vista.getPanelTablero().getCelda(destino).getPieza().move(origen);
+				
+				
+				
+				break;
+			case Movement.KILL :
+				
+		
+				
+				vista.getPanelTablero().getCelda(destino).getPieza().move(origen);
+				vista.getPanelTablero().getCelda(destino).setPieza(m.getFicha());
+				
+				gestionFichasEliminadas.removePiece(m.getFicha());
+				
+				if(m.getFicha().getColor() == Color.WHITE) {
+					vista.getPanelTablero().getBlancas().add(m.getFicha());
+				} else {
+					vista.getPanelTablero().getNegras().add(m.getFicha());
+				}
+				
+				break;
+				
+			case Movement.RISE :
+				
+				vista.getPanelTablero().getCelda(origen).setPieza(m.getFichaPeon());
+				vista.getPanelTablero().getCelda(destino).setPieza(null);
+				
+
+				break;
+				
+			default:throw new Exception("Tipo desconocido");
+			
+			}
+			
+			vista.getPanelTurno().cambiarTurno();
+			Movement.decreaseNumberOfMovements();
+			
+		} catch (ArrayIndexOutOfBoundsException ae) {
+			JOptionPane.showMessageDialog(vista, "No hay anteriores movimientos", "Error", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(vista, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
 		
 		
@@ -121,7 +263,7 @@ public class ControladorJuego implements ActionListener{
 	}
 
 	private void movimientoConPiezaSeleccionada(Celda c) {
-		Tablero tablero = (Tablero)vista.getPanelTablero();
+		JPTablero tablero = vista.getPanelTablero();
 		Coordenada coor = tablero.getCoordenadaFromCell(c);
 		
 		if(piezaSeleccionada.getNextMoves().contains(coor) == false) {
@@ -129,28 +271,37 @@ public class ControladorJuego implements ActionListener{
 
 		} else {
 			Movement m = null;
+			
+			Coordenada origen = piezaSeleccionada.getPosicion();
+			Coordenada destino = tablero.getCoordenadaFromCell(c);
+			
 			desmarcarPosiblesDestinos(tablero);
+			
+			// Comprobamos si matamos pieza
 			if(c.contienePieza()) {
+				// Comprobamos si un peon promociona
 				if((tablero.getCoordenadaFromCell(c).getEjeY() == 8 || tablero.getCoordenadaFromCell(c).getEjeY() == 1) && piezaSeleccionada instanceof Pawn) {
-					m = new Movement(piezaSeleccionada.getPosicion(),tablero.getCoordenadaFromCell(c),Movement.RISE_AND_KILL,c.getPieza(),null,piezaSeleccionada);
+					m = new Movement(origen,destino,Movement.RISE_AND_KILL,c.getPieza(),null,piezaSeleccionada);
 					
 				} else {
-					m = new Movement(piezaSeleccionada.getPosicion(),tablero.getCoordenadaFromCell(c),Movement.KILL,c.getPieza(),null,null);
+					m = new Movement(origen,destino,Movement.KILL,c.getPieza(),null,null);
 				}
 				gestionFichasEliminadas.addPiece(c.getPieza());
 			}
+			//Comprobamos si no se ha comido pieza (m != null) y comprobamos si el peon promociona
 			if(m == null && (tablero.getCoordenadaFromCell(c).getEjeY() == 8 || tablero.getCoordenadaFromCell(c).getEjeY() == 1) && piezaSeleccionada instanceof Pawn) {
 				
-				m = new Movement(piezaSeleccionada.getPosicion(),tablero.getCoordenadaFromCell(c),Movement.RISE,null,null,piezaSeleccionada);
+				m = new Movement(origen,destino,Movement.RISE,null,null,piezaSeleccionada);
 				
-				
+				// Comprobamos si no se ha dado ninguna de las condiciones anteriores por lo tanto es un movimiento sin muerte ni promoción
 			} else if(m == null) {
 				
-				m = new Movement(piezaSeleccionada.getPosicion(),tablero.getCoordenadaFromCell(c),Movement.NOT_KILL,null,null,null);
+				m = new Movement(origen,destino,Movement.NOT_KILL,null,null,null);
 			}
-			
+			//Agragamos el movimiento a la lista
 			dlm.addElement(m);
 			piezaSeleccionada.move(coor);
+			//Comprobamos si ha habido promocion y si la ha habido indicamos en el movimiento el tipo de ficha en la que ha promocionado el peon
 			if(m.getTipoAccion() == Movement.RISE || m.getTipoAccion() == Movement.RISE_AND_KILL) {
 				m.setFichaGenerada(c.getPieza());
 			}
@@ -165,7 +316,7 @@ public class ControladorJuego implements ActionListener{
 		
 	}
 
-	private void desmarcarPosiblesDestinos(Tablero tablero) {
+	private void desmarcarPosiblesDestinos(JPTablero tablero) {
 		for(Coordenada coordenada : piezaSeleccionada.getNextMoves()) {
 			tablero.getCelda(coordenada).setBorder(new LineBorder(java.awt.Color.gray,1));
 		}
@@ -178,7 +329,7 @@ public class ControladorJuego implements ActionListener{
 		
 	}
 
-	private void comprobacionesFinales(Tablero tablero) {
+	private void comprobacionesFinales(JPTablero tablero) {
 		if(tablero.whiteCheck()) {
 			JOptionPane.showMessageDialog(vista, "El rey negro esta en jaque", "Info", JOptionPane.INFORMATION_MESSAGE);
 
@@ -227,7 +378,7 @@ public class ControladorJuego implements ActionListener{
 
 	private void posiblesDestinos() {
 		Set<Coordenada> posiblesMovimientos = piezaSeleccionada.getNextMoves();
-		Tablero tablero = (Tablero)vista.getPanelTablero();
+		JPTablero tablero = vista.getPanelTablero();
 		for(Coordenada coor : posiblesMovimientos)  {
 			Celda celda = tablero.getCelda(coor);
 			if(!celda.contienePieza())
@@ -246,7 +397,7 @@ public class ControladorJuego implements ActionListener{
 			propiedades.getBtnColorCeldaBlanca().setBackground(color);
 			MyConfig.getInstance().setWhiteCellColor(color);
 			Celda.colorCeldaBlanca = color;
-			((Tablero)vista.getPanelTablero()).repaintBoard();
+			vista.getPanelTablero().repaintBoard();
 			
 		}
 		
@@ -261,7 +412,7 @@ public class ControladorJuego implements ActionListener{
 			propiedades.getBtnColorCeldaNegra().setBackground(color);
 			MyConfig.getInstance().setBlackCellColor(color);
 			Celda.colorCeldaNegra = color;
-			((Tablero)vista.getPanelTablero()).repaintBoard();
+			vista.getPanelTablero().repaintBoard();
 			
 		}
 	}
@@ -296,6 +447,47 @@ public class ControladorJuego implements ActionListener{
 			}
 			
 		}
+		
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent me) {
+		
+		Component c = me.getComponent();
+		
+		if(c == vista.getPanelMovements().getList()) {
+			int index = vista.getPanelMovements().getList().getSelectedIndex();
+			while(dlm.getSize() > index) {
+				previousMovement();
+			
+			}
+		}
+		
+		
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
 		
 	}
 	

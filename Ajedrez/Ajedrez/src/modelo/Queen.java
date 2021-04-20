@@ -7,7 +7,7 @@ import entrada.Coordenada;
 
 public class Queen extends Pieza {
 
-	public Queen(Color color,Coordenada posicion, Tablero tablero) {
+	public Queen(Color color,Coordenada posicion, JPTablero tablero) {
 		super(posicion, tablero);
 		// TODO Auto-generated constructor stub
 		if(color == Color.WHITE) {

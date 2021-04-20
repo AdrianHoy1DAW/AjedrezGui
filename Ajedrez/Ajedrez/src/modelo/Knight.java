@@ -7,7 +7,7 @@ import entrada.Coordenada;
 
 public class Knight extends Pieza {
 
-	public Knight(Color color,Coordenada posicion, Tablero tablero) {
+	public Knight(Color color,Coordenada posicion, JPTablero tablero) {
 		super(posicion, tablero);
 		// TODO Auto-generated constructor stub
 		

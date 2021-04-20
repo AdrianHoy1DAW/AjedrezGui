@@ -51,7 +51,19 @@ public class ControladorFichasEliminadas implements GestionFichasEliminadas {
 	@Override
 	public void removePiece(Pieza ficha) {
 		
+		JLabel label = fichasEliminadas.get(ficha);
 		
+		if(ficha.getColor() == Color.WHITE) {
+			
+			vista.getPanelBlancas().remove(label);
+			vista.getPanelBlancas().repaint();
+			
+		} else {
+			
+			vista.getPanelNegras().remove(label);
+			vista.getPanelNegras().repaint();
+			
+		}
 		
 	}
 	
@@ -70,6 +82,8 @@ public class ControladorFichasEliminadas implements GestionFichasEliminadas {
 
 		
 	}
+	
+
 	
 	private Image getScaledImage(Image srcImg, int size){
 		int h = size, w = size;

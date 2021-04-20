@@ -8,7 +8,7 @@ import entrada.Coordenada;
 
 public class King extends Pieza{
 
-	public King(Color color,Coordenada posicion, Tablero tablero) {
+	public King(Color color,Coordenada posicion, JPTablero tablero) {
 		super(posicion, tablero);
 		// TODO Auto-generated constructor stub
 		

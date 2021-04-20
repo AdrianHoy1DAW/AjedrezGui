@@ -7,7 +7,7 @@ import entrada.Coordenada;
 
 public class Bishop extends Pieza{
 
-	public Bishop(Color color,Coordenada posicion, Tablero tablero) {
+	public Bishop(Color color,Coordenada posicion, JPTablero tablero) {
 		super(posicion, tablero);
 		// TODO Auto-generated constructor stub
 		
@@ -29,7 +29,7 @@ public class Bishop extends Pieza{
 		
 	}
 
-	public  static Set<Coordenada> movementAsBishop(Tablero tablero, Pieza p) {
+	public  static Set<Coordenada> movementAsBishop(JPTablero tablero, Pieza p) {
 	
 	Set<Coordenada> lista = new HashSet<Coordenada>();
 	Coordenada aux = p.posicion;

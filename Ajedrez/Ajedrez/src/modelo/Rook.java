@@ -7,7 +7,7 @@ import entrada.Coordenada;
 
 public class Rook extends Pieza {
 
-	public Rook(Color color,Coordenada posicion, Tablero tablero) {
+	public Rook(Color color,Coordenada posicion, JPTablero tablero) {
 		super(posicion, tablero);
 		
 		if(color == Color.WHITE) {
@@ -28,7 +28,7 @@ public class Rook extends Pieza {
 
 	}
 	
-	public static Set<Coordenada> movementAsRook(Tablero tablero, Pieza p) {
+	public static Set<Coordenada> movementAsRook(JPTablero tablero, Pieza p) {
 		
 		Set<Coordenada> lista = new HashSet<Coordenada>();
 		Coordenada aux = p.posicion;

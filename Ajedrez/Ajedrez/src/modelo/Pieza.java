@@ -9,11 +9,11 @@ import entrada.Coordenada;
 public abstract class Pieza {
 
 	protected Tipo tipo;
-	protected Tablero tablero;
+	protected JPTablero tablero;
 	protected Coordenada posicion;
 
 	
-	public Pieza(Coordenada posicion, Tablero tablero) {
+	public Pieza(Coordenada posicion, JPTablero tablero) {
 		super();
 		this.posicion = posicion;
 		this.tablero = tablero;
