@@ -94,12 +94,19 @@ public abstract class Pieza {
 //		return false;
 //	}
 	
+	
+	
 
 	@Override
 	public String toString() {
 		return tipo.getForma();
 	}
 	
+	public void setPosicion(Coordenada posicion) {
+		this.posicion = posicion;
+	}
+
+
 	public abstract Set<Coordenada> getNextMoves();
 
 	
