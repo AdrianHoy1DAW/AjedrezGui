@@ -5,6 +5,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.NoSuchElementException;
@@ -13,6 +19,7 @@ import java.util.Set;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
 
@@ -79,11 +86,15 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		vista.getMntmProperties().addActionListener(this);
 		vista.getPanelMovements().getBtnDelante().addActionListener(this);
 		vista.getPanelMovements().getButtonAtras().addActionListener(this);
+		vista.getMntmGuardar().addActionListener(this);
+		vista.getMntmCargar().addActionListener(this);
 		
 		//Añadir ActionCommand
 		vista.getMntmProperties().setActionCommand("Abrir preferencias");
 		vista.getPanelMovements().getBtnDelante().setActionCommand("Next Movement");
 		vista.getPanelMovements().getButtonAtras().setActionCommand("Previous Movement");
+		vista.getMntmGuardar().setActionCommand("Guardar");
+		vista.getMntmCargar().setActionCommand("Cargar");
 		
 		dlm = new DefaultListModel<Movement>();
 		vista.getPanelMovements().getList().setModel(dlm);
@@ -132,10 +143,82 @@ public class ControladorJuego implements ActionListener, MouseListener{
 			
 			nextMovement();
 			
+		} else if(comando.equals("Cambiar color borde no comer")) {
+			
+			cambiarColorBordeNoKill();
+			
+		} else if(comando.equals("Cambiar color borde comer")) {
+			
+			cambiarColorBordeKill();
+			
+		} else if(comando.equals("Guardar")) {
+			
+			guardarPartida();
+			
+		} else if(comando.equals("Cargar")) {
+			
+			open();
+			
 		}
 		
 		
 	}
+
+	private void guardarPartida() {
+		
+		JFileChooser jfc = new JFileChooser();
+		int opcion = jfc.showSaveDialog(vista);
+		
+		if(opcion == JFileChooser.APPROVE_OPTION) {
+			
+			try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(jfc.getSelectedFile()))) {
+				
+				oos.writeObject(dlm);
+				oos.writeObject(stack);
+				
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}	
+	}
+	
+	private void open() {
+		
+		JFileChooser jfc = new JFileChooser();
+		int opcion = jfc.showOpenDialog(vista);
+		
+		if(opcion == JFileChooser.APPROVE_OPTION) {
+			
+			try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(jfc.getSelectedFile()))) {
+				
+					
+				dlm = (DefaultListModel<Movement>)ois.readObject();
+				stack = (ArrayDeque<Movement>)ois.readObject();
+					
+			
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		
+
+		
+	}
+		
+	
 
 	private void nextMovement() {
 		
@@ -220,6 +303,11 @@ public class ControladorJuego implements ActionListener, MouseListener{
 			
 			vista.getPanelTurno().cambiarTurno();
 			Movement.increaseNumberOfMovements();
+			if(piezaSeleccionada != null) {
+				desmarcarPosiblesDestinos(tablero);
+				piezaSeleccionada = null;
+				borrarPiezaSeleccionada();
+			}
 			
 		
 		} catch (NoSuchElementException ne) {
@@ -327,6 +415,13 @@ public class ControladorJuego implements ActionListener, MouseListener{
 			
 			vista.getPanelTurno().cambiarTurno();
 			Movement.decreaseNumberOfMovements();
+			if(piezaSeleccionada != null) {
+				desmarcarPosiblesDestinos(tablero);
+				piezaSeleccionada = null;
+				borrarPiezaSeleccionada();
+			}
+
+			
 			
 		} catch (ArrayIndexOutOfBoundsException ae) {
 			JOptionPane.showMessageDialog(vista, "No hay anteriores movimientos", "Error", JOptionPane.ERROR_MESSAGE);
@@ -395,6 +490,7 @@ public class ControladorJuego implements ActionListener, MouseListener{
 			borrarPiezaSeleccionada();
 			vista.getPanelTurno().cambiarTurno();
 			comprobacionesFinales(tablero);
+			stack.removeAll(stack);
 
 			
 		}
@@ -501,6 +597,36 @@ public class ControladorJuego implements ActionListener, MouseListener{
 			
 		}
 	}
+	
+	private void cambiarColorBordeNoKill() {
+		
+		java.awt.Color color = JColorChooser.showDialog(propiedades.getBtnColorCeldaNegra(), "Selecciona un color", propiedades.getBtnColorCeldaNegra().getBackground());
+
+		if(color != null) {
+			
+			propiedades.getBtnBordeNormal().setBackground(color);
+			MyConfig.getInstance().setBorderNotKill(color);
+			Celda.colorBordeCelda = color;
+			vista.getPanelTablero().repaintBoard();
+			
+		}
+		
+	}
+	
+	private void cambiarColorBordeKill() {
+		
+		java.awt.Color color = JColorChooser.showDialog(propiedades.getBtnColorCeldaNegra(), "Selecciona un color", propiedades.getBtnColorCeldaNegra().getBackground());
+
+		if(color != null) {
+			
+			propiedades.getBtnBordeComer().setBackground(color);
+			MyConfig.getInstance().setBorderKill(color);
+			Celda.colorBordeCeldaComer = color;
+			vista.getPanelTablero().repaintBoard();
+			
+		}
+		
+	}
 
 	private void abrirPreferencias() {
 		
@@ -517,6 +643,8 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		//Add Action Command
 		propiedades.getBtnColorCeldaBlanca().setActionCommand("Cambiar color celda blanca");
 		propiedades.getBtnColorCeldaNegra().setActionCommand("Cambiar color celda negra");
+		propiedades.getBtnBordeNormal().setActionCommand("Cambiar color borde no comer");
+		propiedades.getBtnBordeComer().setActionCommand("Cambiar color borde comer");
 		
 		
 	}

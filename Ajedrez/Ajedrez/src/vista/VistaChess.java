@@ -26,6 +26,9 @@ public class VistaChess extends JFrame {
 	private JPFichasEliminadas panelEliminadas;
 	private JPTurno panelTurno;
 	private JPMovements panelMovements;
+	private JMenu mnPartida;
+	private JMenuItem mntmGuardar;
+	private JMenuItem mntmCargar;
 	
 
 
@@ -39,6 +42,15 @@ public class VistaChess extends JFrame {
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
+		
+		mnPartida = new JMenu("Partida");
+		menuBar.add(mnPartida);
+		
+		mntmGuardar = new JMenuItem("Guardar");
+		mnPartida.add(mntmGuardar);
+		
+		mntmCargar = new JMenuItem("Cargar");
+		mnPartida.add(mntmCargar);
 		
 		JMenu mnEdit = new JMenu("Edit");
 		menuBar.add(mnEdit);
@@ -123,6 +135,21 @@ public class VistaChess extends JFrame {
 	public JPMovements getPanelMovements() {
 		return panelMovements;
 	}
+
+
+
+
+	public JMenuItem getMntmGuardar() {
+		return mntmGuardar;
+	}
+
+
+
+
+	public JMenuItem getMntmCargar() {
+		return mntmCargar;
+	}
+	
 	
 	
 	

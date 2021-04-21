@@ -75,6 +75,20 @@ public class MyConfig {
 		
 	}
 	
+	public void setBorderNotKill(Color color) {
+		
+		properties.setProperty("color_resaltar_amarillo",String.valueOf(color.getRGB()));
+		guardar();
+		
+	}
+	
+	public void setBorderKill(Color color) {
+		
+		properties.setProperty("color_resaltar_rojo", String.valueOf(color.getRGB()));
+		guardar();
+		
+	}
+	
 	
 	public int getBlackCellColor() {
 		
