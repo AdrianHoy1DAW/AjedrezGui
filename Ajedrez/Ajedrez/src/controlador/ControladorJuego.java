@@ -20,6 +20,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
 
@@ -169,12 +170,15 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		JFileChooser jfc = new JFileChooser();
 		int opcion = jfc.showSaveDialog(vista);
 		
+		
+		 
+		
 		if(opcion == JFileChooser.APPROVE_OPTION) {
 			
 			try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(jfc.getSelectedFile()))) {
 				
-				oos.writeObject(dlm);
-				oos.writeObject(stack);
+				oos.writeObject(convertirEnStack());
+				oos.writeObject(Movement.getNumero());
 				
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -187,18 +191,42 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		}	
 	}
 	
+	private ArrayDeque<Movement> convertirEnStack() {
+		
+		int cuenta = dlm.size();
+		ArrayDeque<Movement> stack2 = new ArrayDeque<>();
+		
+		
+		for(int i = 0; i < cuenta ; i++) {
+			
+			stack2.add(dlm.remove(0));
+			
+			
+		}
+		
+		stack2.addAll(stack);
+		
+		
+		return stack2;
+		
+	}
+
 	private void open() {
 		
 		JFileChooser jfc = new JFileChooser();
 		int opcion = jfc.showOpenDialog(vista);
+		int cuenta = 0;
+		
 		
 		if(opcion == JFileChooser.APPROVE_OPTION) {
 			
 			try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(jfc.getSelectedFile()))) {
 				
 					
-				dlm = (DefaultListModel<Movement>)ois.readObject();
 				stack = (ArrayDeque<Movement>)ois.readObject();
+				avanzar();
+				cuenta = (int)ois.readObject();
+				atras(cuenta);
 					
 			
 			} catch (FileNotFoundException e) {
@@ -215,6 +243,25 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		}
 		
 
+		
+	}
+	
+	private void atras(int cuenta) {
+		
+		while() {
+			previousMovement();
+		}
+	}
+
+	private void avanzar() {
+		
+		int i = 0;
+		int cuenta = stack.size();
+				
+		while(i < cuenta) {
+			nextMovement();
+			i ++;
+		}
 		
 	}
 		
@@ -327,7 +374,7 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		try {
 			
 			Movement m = dlm.remove(dlm.getSize() -1);
-			
+			System.out.println(m);
 			stack.push(m);
 			Coordenada origen,destino;
 			
@@ -426,6 +473,7 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		} catch (ArrayIndexOutOfBoundsException ae) {
 			JOptionPane.showMessageDialog(vista, "No hay anteriores movimientos", "Error", JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
+			e.printStackTrace();
 			JOptionPane.showMessageDialog(vista, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
 		

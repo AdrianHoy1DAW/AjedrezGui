@@ -1,11 +1,12 @@
 package modelo;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 import entrada.Coordenada;
 
-public class Pawn extends Pieza{
+public class Pawn extends Pieza implements Serializable{
 
 	public Pawn(Color color,Coordenada posicion, JPTablero tablero) {
 		super(posicion, tablero);

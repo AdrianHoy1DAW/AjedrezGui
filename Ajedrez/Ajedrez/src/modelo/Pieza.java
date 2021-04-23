@@ -1,12 +1,13 @@
 
 package modelo;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 import entrada.Coordenada;
 
-public abstract class Pieza {
+public abstract class Pieza implements Serializable {
 
 	protected Tipo tipo;
 	protected JPTablero tablero;
