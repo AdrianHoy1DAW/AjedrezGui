@@ -327,7 +327,6 @@ public class ControladorJuego implements ActionListener, MouseListener{
 			
 //				vista.getPanelTablero().getCelda(origen).getPieza().move(destino);
 			tablero.getCelda(origen).getPieza().setPosicion(destino);
-			m.getFicha().setPosicion(null);
 			tablero.getCelda(destino).setPieza(tablero.getCelda(origen).getPieza());
 			tablero.getCelda(origen).setPieza(null);
 			
