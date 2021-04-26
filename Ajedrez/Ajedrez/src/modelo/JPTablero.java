@@ -33,17 +33,20 @@ public class JPTablero extends JPanel{
 		blancas = new ArrayList<Pieza>();
 		negras = new ArrayList<Pieza>();
 
-		
-		inicializar();
-	}
-	
-	private void inicializar() {
-		
 		for (int fila = 0; fila < 8; fila++) {
 			for (int col = 0; col < 8; col++) 
 				tablero.put(new Coordenada((char)('A'+col),1+fila),new Celda());
 				
 		}
+		
+		inicializar();
+		
+		addToPanel();
+	}
+	
+	private void inicializar() {
+		
+
 		
 	
 		
@@ -77,7 +80,7 @@ public class JPTablero extends JPanel{
 					blancas.add(new Pawn(Color.WHITE,new Coordenada((char) ('A' + i),2),this));
 				}
 			
-				addToPanel();
+				
 	
 				
 		
@@ -208,6 +211,18 @@ public class JPTablero extends JPanel{
 		
 		
 		return (encontrado)?c:null;
+		
+	}
+	
+	public void reiniciar() {
+		
+		blancas = new ArrayList<>();
+		negras = new ArrayList<>();
+		
+		
+		
+		inicializar();
+		
 		
 	}
 	

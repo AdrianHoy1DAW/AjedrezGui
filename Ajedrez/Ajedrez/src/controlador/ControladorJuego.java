@@ -70,15 +70,7 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		
 		gestionFichasEliminadas = new ControladorFichasEliminadas(vista.getPanelEliminadas());
 		
-		Component[] components = vista.getPanelTablero().getComponents();
-		
-		for(Component component : components) {
-			
-			if(component instanceof Celda) {
-				((Celda) component).addActionListener(this);
-			}
-			
-		}
+		iniciarTablero();
 		
 		//Añadir los MouseListener
 		vista.getPanelMovements().getList().addMouseListener(this);
@@ -102,6 +94,18 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		
 		
 		
+	}
+
+	private void iniciarTablero() {
+		Component[] components = vista.getPanelTablero().getComponents();
+		
+		for(Component component : components) {
+			
+			if(component instanceof Celda) {
+				((Celda) component).addActionListener(this);
+			}
+			
+		}
 	}
 	
 
@@ -213,17 +217,25 @@ public class ControladorJuego implements ActionListener, MouseListener{
 
 	private void open() {
 		
+
 		JFileChooser jfc = new JFileChooser();
 		int opcion = jfc.showOpenDialog(vista);
 		int cuenta = 0;
 		ArrayDeque<Movement> movi = new ArrayDeque<>();
-		
+		if(dlm.size() != 0) {
+			do {
+				previousMovement();
+			} while (dlm.size() > 0);
+			stack.removeAll(stack);
+		}
+
 		
 		if(opcion == JFileChooser.APPROVE_OPTION) {
 			
 			try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(jfc.getSelectedFile()))) {
 				
-					
+
+				
 				movi = (ArrayDeque<Movement>)ois.readObject();
 				avanzar(movi);
 				cuenta = (int)ois.readObject();
@@ -314,6 +326,8 @@ public class ControladorJuego implements ActionListener, MouseListener{
 			
 			
 //				vista.getPanelTablero().getCelda(origen).getPieza().move(destino);
+			tablero.getCelda(origen).getPieza().setPosicion(destino);
+			m.getFicha().setPosicion(null);
 			tablero.getCelda(destino).setPieza(tablero.getCelda(origen).getPieza());
 			tablero.getCelda(origen).setPieza(null);
 			
@@ -322,6 +336,8 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		case Movement.KILL :
 			
 			gestionFichasEliminadas.addPiece(m.getFicha());
+			tablero.getCelda(origen).getPieza().setPosicion(destino);
+			m.getFicha().setPosicion(null);
 			tablero.getCelda(destino).setPieza(tablero.getCelda(origen).getPieza());
 			tablero.getCelda(origen).setPieza(null);
 			
@@ -336,7 +352,8 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		break;
 		case Movement.RISE :
 		
-			
+			m.getFichaPeon().setPosicion(null);
+			m.getFichaGenerada().setPosicion(destino);
 			tablero.getCelda(origen).setPieza(null);
 			tablero.getCelda(destino).setPieza(m.getFichaGenerada());
 			
@@ -355,6 +372,8 @@ public class ControladorJuego implements ActionListener, MouseListener{
 			
 		case Movement.RISE_AND_KILL :
 			
+			m.getFichaGenerada().setPosicion(destino);
+			m.getFichaPeon().setPosicion(null);
 			gestionFichasEliminadas.addPiece(m.getFicha());
 			tablero.getCelda(origen).setPieza(null);
 			tablero.getCelda(destino).setPieza(null);
@@ -438,6 +457,7 @@ public class ControladorJuego implements ActionListener, MouseListener{
 			case Movement.RISE :
 				
 				m.getFichaPeon().setPosicion(origen);
+				m.getFichaGenerada().setPosicion(null);
 				
 				tablero.getCelda(origen).setPieza(m.getFichaPeon());
 				tablero.getCelda(destino).setPieza(null);
@@ -455,6 +475,7 @@ public class ControladorJuego implements ActionListener, MouseListener{
 				
 				m.getFichaPeon().setPosicion(origen);
 				m.getFicha().setPosicion(destino);
+				m.getFichaGenerada().setPosicion(null);
 				
 				tablero.getCelda(origen).setPieza(m.getFichaPeon());
 				tablero.getCelda(destino).setPieza(null);
