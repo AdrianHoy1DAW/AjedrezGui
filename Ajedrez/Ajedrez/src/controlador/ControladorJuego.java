@@ -178,7 +178,7 @@ public class ControladorJuego implements ActionListener, MouseListener{
 			try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(jfc.getSelectedFile()))) {
 				
 				oos.writeObject(convertirEnStack());
-				oos.writeObject(Movement.getNumero());
+				oos.writeObject(Movement.getNumero() -1);
 				
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -199,7 +199,7 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		
 		for(int i = 0; i < cuenta ; i++) {
 			
-			stack2.add(dlm.remove(0));
+			stack2.add(dlm.get(i));
 			
 			
 		}
@@ -216,6 +216,7 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		JFileChooser jfc = new JFileChooser();
 		int opcion = jfc.showOpenDialog(vista);
 		int cuenta = 0;
+		ArrayDeque<Movement> movi = new ArrayDeque<>();
 		
 		
 		if(opcion == JFileChooser.APPROVE_OPTION) {
@@ -223,10 +224,11 @@ public class ControladorJuego implements ActionListener, MouseListener{
 			try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(jfc.getSelectedFile()))) {
 				
 					
-				stack = (ArrayDeque<Movement>)ois.readObject();
-				avanzar();
+				movi = (ArrayDeque<Movement>)ois.readObject();
+				avanzar(movi);
 				cuenta = (int)ois.readObject();
-				atras(cuenta);
+				retroceder(cuenta);
+				
 					
 			
 			} catch (FileNotFoundException e) {
@@ -246,20 +248,32 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		
 	}
 	
-	private void atras(int cuenta) {
+
+
+	private void retroceder(int cuenta) {
 		
-		while() {
+		int contador = dlm.size();
+		
+		
+		while(contador > cuenta) {
 			previousMovement();
+			contador --;
 		}
+		
 	}
 
-	private void avanzar() {
+	private void avanzar(ArrayDeque<Movement> movi) {
 		
 		int i = 0;
-		int cuenta = stack.size();
+		int cuenta = movi.size();
 				
 		while(i < cuenta) {
-			nextMovement();
+			try {
+				nextMovemente(movi.pop());
+			} catch (Exception e) {
+				
+				e.printStackTrace();
+			}
 			i ++;
 		}
 		
@@ -272,89 +286,7 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		try {
 			
 			Movement m = stack.pop();
-			dlm.addElement(m);
-			Coordenada origen,destino;
-			JPTablero tablero = vista.getPanelTablero();
-			
-			origen = m.getOrigen();
-			destino = m.getDestino();
-			
-			switch(m.getTipoAccion()) {
-			case Movement.NOT_KILL : 
-				
-
-				
-				
-//				vista.getPanelTablero().getCelda(origen).getPieza().move(destino);
-				tablero.getCelda(destino).setPieza(tablero.getCelda(origen).getPieza());
-				tablero.getCelda(origen).setPieza(null);
-				
-				
-				break;
-			case Movement.KILL :
-				
-				gestionFichasEliminadas.addPiece(tablero.getCelda(destino).getPieza());
-				tablero.getCelda(destino).setPieza(tablero.getCelda(origen).getPieza());
-				tablero.getCelda(origen).setPieza(null);
-				
-				if(m.getFicha().getColor() == Color.WHITE) {
-					tablero.getBlancas().remove(m.getFicha());
-				} else {
-					tablero.getNegras().remove(m.getFicha());
-				}
-				
-				
-				
-			break;
-			case Movement.RISE :
-			
-				
-				tablero.getCelda(origen).setPieza(null);
-				tablero.getCelda(destino).setPieza(m.getFichaGenerada());
-				
-				
-				if(m.getFichaPeon().getColor() == Color.WHITE) {
-					tablero.getBlancas().remove(m.getFichaPeon());
-					tablero.getBlancas().add(m.getFichaGenerada());
-				} else {
-					tablero.getNegras().remove(m.getFichaPeon());
-					tablero.getNegras().add(m.getFichaGenerada());
-				}
-
-				
-				
-				break;
-				
-			case Movement.RISE_AND_KILL :
-				
-				gestionFichasEliminadas.addPiece(tablero.getCelda(destino).getPieza());
-				tablero.getCelda(origen).setPieza(null);
-				tablero.getCelda(destino).setPieza(null);
-				tablero.getCelda(destino).setPieza(m.getFichaGenerada());
-				
-				if(m.getFichaPeon().getColor() == Color.WHITE) {
-					tablero.getBlancas().remove(m.getFichaPeon());
-					tablero.getBlancas().add(m.getFichaGenerada());
-					tablero.getNegras().remove(m.getFicha());
-				} else {
-					tablero.getNegras().remove(m.getFichaPeon());
-					tablero.getNegras().add(m.getFichaGenerada());
-					tablero.getBlancas().remove(m.getFicha());
-				}
-				
-				break;
-				
-			default:throw new Exception("Tipo desconocido");
-				
-			}
-			
-			vista.getPanelTurno().cambiarTurno();
-			Movement.increaseNumberOfMovements();
-			if(piezaSeleccionada != null) {
-				desmarcarPosiblesDestinos(tablero);
-				piezaSeleccionada = null;
-				borrarPiezaSeleccionada();
-			}
+			nextMovemente(m);
 			
 		
 		} catch (NoSuchElementException ne) {
@@ -367,6 +299,92 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		
 	}
 
+	private void nextMovemente(Movement m) throws Exception {
+		dlm.addElement(m);
+		Coordenada origen,destino;
+		JPTablero tablero = vista.getPanelTablero();
+		
+		origen = m.getOrigen();
+		destino = m.getDestino();
+		
+		switch(m.getTipoAccion()) {
+		case Movement.NOT_KILL : 
+			
+
+			
+			
+//				vista.getPanelTablero().getCelda(origen).getPieza().move(destino);
+			tablero.getCelda(destino).setPieza(tablero.getCelda(origen).getPieza());
+			tablero.getCelda(origen).setPieza(null);
+			
+			
+			break;
+		case Movement.KILL :
+			
+			gestionFichasEliminadas.addPiece(m.getFicha());
+			tablero.getCelda(destino).setPieza(tablero.getCelda(origen).getPieza());
+			tablero.getCelda(origen).setPieza(null);
+			
+			if(m.getFicha().getColor() == Color.WHITE) {
+				tablero.getBlancas().remove(m.getFicha());
+			} else {
+				tablero.getNegras().remove(m.getFicha());
+			}
+			
+			
+			
+		break;
+		case Movement.RISE :
+		
+			
+			tablero.getCelda(origen).setPieza(null);
+			tablero.getCelda(destino).setPieza(m.getFichaGenerada());
+			
+			
+			if(m.getFichaPeon().getColor() == Color.WHITE) {
+				tablero.getBlancas().remove(m.getFichaPeon());
+				tablero.getBlancas().add(m.getFichaGenerada());
+			} else {
+				tablero.getNegras().remove(m.getFichaPeon());
+				tablero.getNegras().add(m.getFichaGenerada());
+			}
+
+			
+			
+			break;
+			
+		case Movement.RISE_AND_KILL :
+			
+			gestionFichasEliminadas.addPiece(m.getFicha());
+			tablero.getCelda(origen).setPieza(null);
+			tablero.getCelda(destino).setPieza(null);
+			tablero.getCelda(destino).setPieza(m.getFichaGenerada());
+			
+			if(m.getFichaPeon().getColor() == Color.WHITE) {
+				tablero.getBlancas().remove(m.getFichaPeon());
+				tablero.getBlancas().add(m.getFichaGenerada());
+				tablero.getNegras().remove(m.getFicha());
+			} else {
+				tablero.getNegras().remove(m.getFichaPeon());
+				tablero.getNegras().add(m.getFichaGenerada());
+				tablero.getBlancas().remove(m.getFicha());
+			}
+			
+			break;
+			
+		default:throw new Exception("Tipo desconocido");
+			
+		}
+		
+		vista.getPanelTurno().cambiarTurno();
+		Movement.increaseNumberOfMovements();
+		if(piezaSeleccionada != null) {
+			desmarcarPosiblesDestinos(tablero);
+			piezaSeleccionada = null;
+			borrarPiezaSeleccionada();
+		}
+	}
+
 	private void previousMovement() {
 		
 		JPTablero tablero = vista.getPanelTablero();
@@ -374,7 +392,6 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		try {
 			
 			Movement m = dlm.remove(dlm.getSize() -1);
-			System.out.println(m);
 			stack.push(m);
 			Coordenada origen,destino;
 			

@@ -5,6 +5,7 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -52,6 +53,7 @@ public class ControladorFichasEliminadas implements GestionFichasEliminadas {
 	public void removePiece(Pieza ficha) {
 		
 		JLabel label = fichasEliminadas.get(ficha);
+
 		
 		if(ficha.getColor() == Color.WHITE) {
 			
@@ -96,6 +98,29 @@ public class ControladorFichasEliminadas implements GestionFichasEliminadas {
 	    g2.dispose();
 
 	    return resizedImg;
+	}
+	
+	public void removeAll() {
+		
+		if(fichasEliminadas.size() != 0) {
+			
+			Pieza pieza;
+			Iterator<Pieza> it = fichasEliminadas.keySet().iterator();
+			
+			while(it.hasNext()) {
+				pieza = it.next();
+				if(pieza.getColor() == Color.WHITE) {
+					vista.getPanelBlancas().remove(fichasEliminadas.get(pieza));
+				} else {
+					vista.getPanelNegras().remove(fichasEliminadas.get(pieza));
+				}
+				it.remove();
+			}
+			
+			vista.getPanelBlancas().repaint();
+			vista.getPanelNegras().repaint();
+		}
+		
 	}
 
 }

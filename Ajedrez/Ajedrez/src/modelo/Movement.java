@@ -98,7 +98,7 @@ public class Movement implements Serializable {
 
 	@Override
 	public String toString() {
-		return numeroMovimiento + " - [start=" + origen + " ,end=" + destino + "]" + ficha + tipoAccion;
+		return numeroMovimiento + " - [start=" + origen + " ,end=" + destino + "]";
 	}
 	
 
