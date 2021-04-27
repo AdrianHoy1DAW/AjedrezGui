@@ -332,10 +332,6 @@ public class ControladorJuego implements ActionListener, MouseListener{
 			gestionFichasEliminadas.addPiece(m.getFicha());
 			
 			tablero.getCelda(origen).getPieza().setPosicion(destino);
-			m.getFicha().setPosicion(null);
-			
-			
-			tablero.getCelda(destino).setPieza(null);
 			tablero.getCelda(destino).setPieza(tablero.getCelda(origen).getPieza());
 			tablero.getCelda(origen).setPieza(null);
 			
@@ -437,8 +433,7 @@ public class ControladorJuego implements ActionListener, MouseListener{
 				
 		
 				tablero.getCelda(destino).getPieza().setPosicion(origen);
-				m.getFicha().setPosicion(destino);
-				
+				m.getFicha().setPosicion(destino);	
 				tablero.getCelda(origen).setPieza(tablero.getCelda(destino).getPieza());
 				tablero.getCelda(destino).setPieza(m.getFicha());
 				
