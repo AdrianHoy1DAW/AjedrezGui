@@ -165,13 +165,13 @@ public class JPTablero extends JPanel{
 		
 		if(p.getColor() == Color.WHITE) {
 			
-			blancas.remove(blancas.indexOf(p));
+			blancas.remove(p);
 
 			
 			
 		} else {
 			
-			negras.remove(negras.indexOf(p));
+			negras.remove(p);
 		}
 		
 	}
