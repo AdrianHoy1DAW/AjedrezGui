@@ -315,6 +315,7 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		dlm.addElement(m);
 		Coordenada origen,destino;
 		JPTablero tablero = vista.getPanelTablero();
+
 		
 		origen = m.getOrigen();
 		destino = m.getDestino();
@@ -336,7 +337,8 @@ public class ControladorJuego implements ActionListener, MouseListener{
 			
 			gestionFichasEliminadas.addPiece(m.getFicha());
 			tablero.getCelda(origen).getPieza().setPosicion(destino);
-			m.getFicha().setPosicion(null);
+			tablero.getCelda(destino).getPieza().setPosicion(null);
+			
 			tablero.getCelda(destino).setPieza(tablero.getCelda(origen).getPieza());
 			tablero.getCelda(origen).setPieza(null);
 			
@@ -351,7 +353,7 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		break;
 		case Movement.RISE :
 		
-			m.getFichaPeon().setPosicion(null);
+			tablero.getCelda(origen).getPieza().setPosicion(null);
 			m.getFichaGenerada().setPosicion(destino);
 			tablero.getCelda(origen).setPieza(null);
 			tablero.getCelda(destino).setPieza(m.getFichaGenerada());
@@ -372,7 +374,9 @@ public class ControladorJuego implements ActionListener, MouseListener{
 		case Movement.RISE_AND_KILL :
 			
 			m.getFichaGenerada().setPosicion(destino);
-			m.getFichaPeon().setPosicion(null);
+			tablero.getCelda(origen).getPieza().setPosicion(null);
+			tablero.getCelda(destino).getPieza().setPosicion(null);
+			
 			gestionFichasEliminadas.addPiece(m.getFicha());
 			tablero.getCelda(origen).setPieza(null);
 			tablero.getCelda(destino).setPieza(null);
@@ -383,7 +387,7 @@ public class ControladorJuego implements ActionListener, MouseListener{
 				tablero.getBlancas().add(m.getFichaGenerada());
 				tablero.getNegras().remove(m.getFicha());
 			} else {
-				tablero.getNegras().remove(m.getFichaPeon());
+				tablero.getBlancas().remove(m.getFichaPeon());
 				tablero.getNegras().add(m.getFichaGenerada());
 				tablero.getBlancas().remove(m.getFicha());
 			}
@@ -406,6 +410,7 @@ public class ControladorJuego implements ActionListener, MouseListener{
 	private void previousMovement() {
 		
 		JPTablero tablero = vista.getPanelTablero();
+
 		
 		try {
 			
@@ -481,7 +486,7 @@ public class ControladorJuego implements ActionListener, MouseListener{
 				tablero.getCelda(destino).setPieza(m.getFicha());
 				gestionFichasEliminadas.removePiece(m.getFicha());
 				
-				if(m.getFichaPeon().getColor() == Color.WHITE) {
+				if(m.getFichaGenerada().getColor() == Color.WHITE) {
 					tablero.getBlancas().remove(m.getFichaGenerada());
 					tablero.getBlancas().add(m.getFichaPeon());
 					tablero.getNegras().add(m.getFicha());
